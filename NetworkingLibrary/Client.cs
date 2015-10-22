@@ -17,6 +17,11 @@ namespace NetworkingLibrary
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
+        internal Client(Socket socket)
+        {
+            _socket = socket;
+        }
+
         public bool Connect(EndPoint endPoint)
         {
             try

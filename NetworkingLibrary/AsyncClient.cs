@@ -17,6 +17,11 @@ namespace NetworkingLibrary
             _pool = new Pool<SocketAsyncEventArgs>();
         }
 
+        internal AsyncClient(Socket socket) : base(socket)
+        {
+            _pool = new Pool<SocketAsyncEventArgs>();
+        }
+
         public async Task<bool> ConnectAsync(EndPoint endPoint)
         {
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async

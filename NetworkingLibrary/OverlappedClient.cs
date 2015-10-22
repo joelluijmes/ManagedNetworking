@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 
 namespace NetworkingLibrary
 {
-    public class OverlappedClient : IClient
+    public sealed class OverlappedClient : IClient
     {
         private readonly Socket _socket;
 
         public event EventHandler<ClientEventArgs> ClientConnected;
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
-
-
+        
         public OverlappedClient()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        }
+
+        internal OverlappedClient(Socket socket)
+        {
+            _socket = socket;
         }
 
         public bool Connect(EndPoint endPoint)
