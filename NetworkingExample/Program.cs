@@ -31,31 +31,16 @@ namespace NetworkingExample
         static void Main(string[] args)
         {
             Task.Run(() => ServerTask());
-
-            var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2222);
-            var request = "GET / HTTP/1.1\r\nHost: google.com\r\n\r\n";
-            var buffer = Encoding.UTF8.GetBytes(request);
-
-            Task.Run(async () =>
+                        
+            Task.Run(() =>
             {
-                var client = new AsyncClient();
-                await client.ConnectAsync(endPoint);
+                var endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2222);
 
-                await client.SendAllAsync(buffer, buffer.Length);
-
-                var buf = new byte[512];
-                var received = await client.ReceiveAsync(buf, 0, buf.Length);
-                var response = Encoding.UTF8.GetString(buf, 0, received);
-
-                Console.WriteLine(response);
+                var client = new Client();
+                client.Connect(endPoint);
             });
 
             Process.GetCurrentProcess().WaitForExit();
-        }
-
-        private static object Benchmark(Action p)
-        {
-            throw new NotImplementedException();
         }
     }
 }

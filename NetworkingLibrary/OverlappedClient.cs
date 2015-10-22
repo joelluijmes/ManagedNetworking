@@ -43,12 +43,7 @@ namespace NetworkingLibrary
                 return false;
             }
         }
-
-        public bool ConnectAny(IEnumerable<EndPoint> endPoints, out EndPoint endPoint)
-        {
-            throw new NotSupportedException("Please handle this from user code.");
-        }
-
+        
         public int Send(byte[] buffer, int offset, int count)
         {
             _socket.BeginSend(buffer, offset, count, SocketFlags.None, (result) =>
