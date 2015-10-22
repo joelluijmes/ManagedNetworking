@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace NetworkingLibrary
 {
-    public sealed class OverlappedClient : IClient
+    public class OverlappedClient : IClient
     {
-        private readonly Socket _socket;
+        protected readonly Socket _socket;
 
         public event EventHandler<ClientEventArgs> ClientConnected;
         public event EventHandler<TransferEventArgs> SendCompleted;

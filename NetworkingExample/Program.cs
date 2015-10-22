@@ -15,16 +15,16 @@ namespace NetworkingExample
 {
     class Program
     {
-        static void ServerTask()
+        static async void ServerTask()
         {
-            var server = new OverlappedServer();
+            var server = new AsyncServer();
             server.Listen(2222);
             server.ClientConnected += (o, e) => Console.WriteLine("Client connected");
 
             while (true)
             {
-                var overlappedClient = server.AcceptClient<OverlappedClient>();
-                
+                var client = await server.AcceptClientAsync<AsyncClient>();
+                Console.WriteLine("Client connectedd");
             }
         }
         

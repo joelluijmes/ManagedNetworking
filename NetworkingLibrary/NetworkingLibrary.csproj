@@ -41,11 +41,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncClient.cs" />
+    <Compile Include="AsyncServer.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Creator.cs" />
     <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="Events\TransferEventArgs.cs" />
     <Compile Include="IAsyncClient.cs" />
+    <Compile Include="IAsyncServer.cs" />
     <Compile Include="IClient.cs" />
     <Compile Include="OverlappedClient.cs" />
     <Compile Include="OverlappedServer.cs" />

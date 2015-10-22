@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace NetworkingLibrary
 {
-    public sealed class AsyncClient : Client, IAsyncClient
+    public sealed class AsyncClient : OverlappedClient, IAsyncClient
     {
-        private Pool<SocketAsyncEventArgs> _pool;
+        private readonly Pool<SocketAsyncEventArgs> _pool;
 
         public AsyncClient()
         {
