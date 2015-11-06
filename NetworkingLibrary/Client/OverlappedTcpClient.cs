@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace NetworkingLibrary.Client
 {
-    public class TcpOverlappedClient : TcpClient, IOverlappedClient
+    public class OverlappedTcpClient : TcpClient, IOverlappedClient
     {
         public event EventHandler<ClientEventArgs> ClientConnected;
         public event EventHandler<TransferEventArgs> SendCompleted;

@@ -59,11 +59,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\AsyncTcpClient.cs" />
+    <Compile Include="Client\AsyncUdpClient.cs" />
     <Compile Include="Client\BaseClient.cs" />
+    <Compile Include="Client\IAsyncUdpClient.cs" />
     <Compile Include="Client\IOverlappedClient.cs" />
     <Compile Include="Client\IUdpClient.cs" />
     <Compile Include="Client\UdpClient.cs" />
-    <Compile Include="Client\UdpOverlappedClient.cs" />
+    <Compile Include="Client\OverlappedUdpClient.cs" />
     <Compile Include="Server\AsyncServer.cs" />
     <Compile Include="Client\TcpClient.cs" />
     <Compile Include="Creator.cs" />
@@ -72,7 +74,7 @@
     <Compile Include="Client\IAsyncTcpClient.cs" />
     <Compile Include="Server\IAsyncServer.cs" />
     <Compile Include="Client\ITcpClient.cs" />
-    <Compile Include="Client\TcpOverlappedClient.cs" />
+    <Compile Include="Client\OverlappedTcpClient.cs" />
     <Compile Include="Server\OverlappedServer.cs" />
     <Compile Include="Pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

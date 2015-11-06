@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NetworkingLibrary.Client
 {
-    public sealed class AsyncTcpClient : TcpOverlappedClient, IAsyncTcpClient
+    public sealed class AsyncTcpClient : OverlappedTcpClient, IAsyncTcpClient
     {
         private readonly Pool<SocketAsyncEventArgs> _pool;
 

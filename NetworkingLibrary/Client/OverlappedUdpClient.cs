@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace NetworkingLibrary.Client
 {
-    public class UdpOverlappedClient : UdpClient, IOverlappedClient
+    public class OverlappedUdpClient : UdpClient, IOverlappedClient
     {
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
