@@ -11,6 +11,5 @@ namespace NetworkingLibrary.Client
         int Send(byte[] buffer, int offset, int count);
         bool SendAll(byte[] buffer, int count);
         bool SendAll(byte[] buffer);
-
     }
 }
