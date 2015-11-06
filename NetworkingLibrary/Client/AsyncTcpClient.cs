@@ -115,6 +115,8 @@ namespace NetworkingLibrary.Client
                 var received = await ReceiveAsync(buffer, totalReceived, count - totalReceived);
                 if (received == 0)
                     return false;
+
+                totalReceived += received;
             }
 
             return true;

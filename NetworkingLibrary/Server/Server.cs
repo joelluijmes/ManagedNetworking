@@ -1,6 +1,7 @@
 ﻿using NetworkingLibrary.Client;
 using System.Net;
 using System.Net.Sockets;
+using Util;
 
 namespace NetworkingLibrary.Server
 {
@@ -33,7 +34,7 @@ namespace NetworkingLibrary.Server
         {
             var socket = _socket.Accept();
 
-            var creator = Creator<T>.GetCreator();
+            var creator = Creator<T>.GetInternalCreator();
             return creator(socket);
         }
     }
