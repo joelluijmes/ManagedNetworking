@@ -1,4 +1,5 @@
 ﻿using System;
+using NetworkingLibrary.Client;
 
 namespace NetworkingLibrary.Events
 {
