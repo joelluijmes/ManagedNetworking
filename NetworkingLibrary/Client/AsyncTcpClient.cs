@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace NetworkingLibrary.Client
 {
-    public sealed class AsyncClient : OverlappedClient, IAsyncClient
+    public sealed class AsyncTcpClient : TcpOverlappedClient, IAsyncTcpClient
     {
         private readonly Pool<SocketAsyncEventArgs> _pool;
 
-        public AsyncClient()
+        public AsyncTcpClient()
         {
             _pool = new Pool<SocketAsyncEventArgs>();
         }
 
-        internal AsyncClient(Socket socket) : base(socket)
+        internal AsyncTcpClient(Socket socket)
         {
+            _socket = socket;
             _pool = new Pool<SocketAsyncEventArgs>();
         }
 

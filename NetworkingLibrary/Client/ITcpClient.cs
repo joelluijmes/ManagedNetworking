@@ -2,7 +2,7 @@
 
 namespace NetworkingLibrary.Client
 {
-    public interface IClient
+    public interface ITcpClient
     {
         bool Connect(EndPoint endPoint);
         int Receive(byte[] buffer, int offset, int count);

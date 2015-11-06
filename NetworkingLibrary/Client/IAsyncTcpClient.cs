@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace NetworkingLibrary.Client
 {
-    public interface IAsyncClient
+    public interface IAsyncTcpClient
     {
         Task<bool> ConnectAsync(EndPoint endPoint);
         Task<bool> ReceiveAllAsync(byte[] buffer, int count);

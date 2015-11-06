@@ -58,16 +58,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\AsyncClient.cs" />
+    <Compile Include="Client\AsyncTcpClient.cs" />
+    <Compile Include="Client\BaseClient.cs" />
+    <Compile Include="Client\IOverlappedClient.cs" />
+    <Compile Include="Client\IUdpClient.cs" />
+    <Compile Include="Client\UdpClient.cs" />
+    <Compile Include="Client\UdpOverlappedClient.cs" />
     <Compile Include="Server\AsyncServer.cs" />
-    <Compile Include="Client\Client.cs" />
+    <Compile Include="Client\TcpClient.cs" />
     <Compile Include="Creator.cs" />
     <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="Events\TransferEventArgs.cs" />
-    <Compile Include="Client\IAsyncClient.cs" />
+    <Compile Include="Client\IAsyncTcpClient.cs" />
     <Compile Include="Server\IAsyncServer.cs" />
-    <Compile Include="Client\IClient.cs" />
-    <Compile Include="Client\OverlappedClient.cs" />
+    <Compile Include="Client\ITcpClient.cs" />
+    <Compile Include="Client\TcpOverlappedClient.cs" />
     <Compile Include="Server\OverlappedServer.cs" />
     <Compile Include="Pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -37,7 +37,7 @@ namespace NetworkingLibrary.Server
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public virtual T AcceptClient<T>() where T : IClient
+        public virtual T AcceptClient<T>() where T : ITcpClient
         {
             var socket = _socket.Accept();
 
