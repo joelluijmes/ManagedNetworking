@@ -30,6 +30,9 @@ namespace NetworkingLibrary.Client
             return true;
         }
 
+        public bool SendToAll(byte[] buffer, EndPoint endPoint)
+            => SendToAll(buffer, buffer.Length, endPoint);
+
         public virtual int ReceiveFrom(byte[] buffer, int offset, int count, ref EndPoint endPoint)
             => _socket.ReceiveFrom(buffer, offset, count, SocketFlags.None, ref endPoint);
 
@@ -47,5 +50,8 @@ namespace NetworkingLibrary.Client
 
             return true;
         }
+
+        public bool ReceiveFromAll(byte[] buffer, ref EndPoint endPoint)
+            => ReceiveFromAll(buffer, ref endPoint);
     }
 }

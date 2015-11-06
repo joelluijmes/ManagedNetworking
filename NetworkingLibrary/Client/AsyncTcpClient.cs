@@ -81,6 +81,9 @@ namespace NetworkingLibrary.Client
             return true;
         }
 
+        public Task<bool> SendAllAsync(byte[] buffer) 
+            => SendAllAsync(buffer, buffer.Length);
+
         public async Task<int> ReceiveAsync(byte[] buffer, int offset, int count)
         {
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
@@ -116,5 +119,8 @@ namespace NetworkingLibrary.Client
 
             return true;
         }
+
+        public Task<bool> ReceiveAllAsync(byte[] buffer)
+            => ReceiveAllAsync(buffer, buffer.Length);
     }
 }

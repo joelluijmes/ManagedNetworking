@@ -7,8 +7,10 @@ namespace NetworkingLibrary.Client
     {
         Task<bool> ConnectAsync(EndPoint endPoint);
         Task<bool> ReceiveAllAsync(byte[] buffer, int count);
+        Task<bool> ReceiveAllAsync(byte[] buffer);
         Task<int> ReceiveAsync(byte[] buffer, int offset, int count);
-        Task<bool> SendAllAsync(byte[] buffer, int count);
         Task<int> SendAsync(byte[] buffer, int offset, int count);
+        Task<bool> SendAllAsync(byte[] buffer, int count);
+        Task<bool> SendAllAsync(byte[] buffer);
     }
 }

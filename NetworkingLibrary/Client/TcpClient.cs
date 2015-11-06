@@ -36,6 +36,9 @@ namespace NetworkingLibrary.Client
         
         public virtual bool SendAll(byte[] buffer, int count)
             => TransceiveAll(Send, buffer, count);
+
+        public bool SendAll(byte[] buffer)
+            => SendAll(buffer, buffer.Length);
         
         public virtual int Receive(byte[] buffer, int offset, int count)
         {
@@ -55,6 +58,9 @@ namespace NetworkingLibrary.Client
         
         public virtual bool ReceiveAll(byte[] buffer, int count)
             => TransceiveAll(Receive, buffer, count);
+
+        public bool ReceiveAll(byte[] buffer)
+            => ReceiveAll(buffer, buffer.Length);
         
         private bool TransceiveAll(Func<byte[], int, int, int> func, byte[] buffer, int count)
         {

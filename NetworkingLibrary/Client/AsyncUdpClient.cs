@@ -56,7 +56,10 @@ namespace NetworkingLibrary.Client
 
             return Tuple.Create(true, remoteEndPoint);
         }
-        
+
+        public Task<Tuple<bool, EndPoint>> ReceiveAllFromAsync(byte[] buffer, EndPoint endPoint)
+            => ReceiveAllFromAsync(buffer, buffer.Length, endPoint);
+
         public async Task<int> SendToAsync(byte[] buffer, int offset, int count, EndPoint endPoint)
         {
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
@@ -96,5 +99,8 @@ namespace NetworkingLibrary.Client
 
             return true;
         }
+
+        public Task<bool> SendToAllAsync(byte[] buffer, EndPoint endPoint)
+            => SendToAllAsync(buffer, buffer.Length, endPoint);
     }
 }
