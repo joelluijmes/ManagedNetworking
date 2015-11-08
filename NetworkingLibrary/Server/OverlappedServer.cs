@@ -12,9 +12,8 @@ namespace NetworkingLibrary.Server
             _socket.BeginAccept((result) =>
             {
                 var clientSocket = _socket.EndAccept(result);
+                var client = CreateClient<T>(clientSocket);
 
-                var creator = Creator<T>.GetCreator();
-                var client = creator(clientSocket);
                 ClientConnected?.Invoke(this, new ClientEventArgs(client));
             }, null);
 

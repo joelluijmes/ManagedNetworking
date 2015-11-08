@@ -2,10 +2,11 @@
 using System.Net;
 using System.Net.Sockets;
 using Util;
+using System;
 
 namespace NetworkingLibrary.Server
 {
-    public class Server
+    public class Server : BaseServer
     {
         private const int BACKLOG = 200;
         protected Socket _socket;
@@ -30,12 +31,7 @@ namespace NetworkingLibrary.Server
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public virtual T AcceptClient<T>() where T : ITcpClient
-        {
-            var socket = _socket.Accept();
-
-            var creator = Creator<T>.GetInternalCreator();
-            return creator(socket);
-        }
+        protected override Socket AcceptClient()
+            => _socket.Accept();
     }
 }

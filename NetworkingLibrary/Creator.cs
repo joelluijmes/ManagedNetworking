@@ -10,24 +10,21 @@ using System.Reflection;
 
 namespace Util
 {
-    public static class Creator<T>
+    static class Creator
+    {
+        public static BindingFlags Internal = BindingFlags.NonPublic | BindingFlags.Instance;
+        public static BindingFlags Public = BindingFlags.Public;
+    }
+
+    static class Creator<T>
     {
         private static object _lock = new object();
         private static Dictionary<ConstructorInfo, ObjectCreator> _factories = new Dictionary<ConstructorInfo, ObjectCreator>();
-
+        
         public delegate T ObjectCreator(params object[] args);
-
-        public static ObjectCreator GetPublicCreator()
-        {
-            var ctor = typeof(T).GetConstructors().First();
-            return GetCreator(ctor);
-        }
-
-        public static ObjectCreator GetInternalCreator()
-        {
-            var ctor = typeof(T).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First();
-            return GetCreator(ctor);
-        }
+        
+        public static ConstructorInfo GetConstructorInfo<T1>(BindingFlags bindingFlags)
+            => typeof(T).GetConstructor(bindingFlags, null, new[] { typeof(T1) }, null);
 
         public static ObjectCreator GetCreator(ConstructorInfo constructorInfo)
         {

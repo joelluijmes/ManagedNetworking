@@ -66,12 +66,13 @@
     <Compile Include="Client\IUdpClient.cs" />
     <Compile Include="Client\UdpClient.cs" />
     <Compile Include="Client\OverlappedUdpClient.cs" />
+    <Compile Include="Creator.cs" />
     <Compile Include="Server\AsyncServer.cs" />
     <Compile Include="Client\TcpClient.cs" />
-    <Compile Include="Creator.cs" />
     <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="Events\TransferEventArgs.cs" />
     <Compile Include="Client\IAsyncTcpClient.cs" />
+    <Compile Include="Server\BaseServer.cs" />
     <Compile Include="Server\IAsyncServer.cs" />
     <Compile Include="Client\ITcpClient.cs" />
     <Compile Include="Client\OverlappedTcpClient.cs" />

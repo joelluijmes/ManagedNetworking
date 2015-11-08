@@ -1,6 +1,8 @@
-﻿using System;
+﻿using NetworkingLibrary.Client;
+using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Util;
 
 namespace NetworkingLibrary.Server
 {
@@ -18,13 +20,12 @@ namespace NetworkingLibrary.Server
             _pool = new Pool<SocketAsyncEventArgs>();
         }
 
-        public async Task<T> AcceptClientAsync<T>()
+        public async Task<T> AcceptClientAsync<T>() where T : BaseClient, ITcpClient
         {
             var tcs = new TaskCompletionSource<T>();     // use TaskCompletionSource for when the method is running async
             EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
             {
-                var creator = Creator<T>.GetCreator();
-                var client = creator(e.AcceptSocket);
+                var client = CreateClient<T>(e.AcceptSocket);
 
                 tcs.SetResult(client);
             };
