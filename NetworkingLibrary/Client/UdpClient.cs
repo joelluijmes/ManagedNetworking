@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 
 namespace NetworkingLibrary.Client
@@ -30,7 +31,7 @@ namespace NetworkingLibrary.Client
             return true;
         }
 
-        public bool SendToAll(byte[] buffer, EndPoint endPoint)
+        public virtual bool SendToAll(byte[] buffer, EndPoint endPoint)
             => SendToAll(buffer, buffer.Length, endPoint);
 
         public virtual int ReceiveFrom(byte[] buffer, int offset, int count, ref EndPoint endPoint)
@@ -51,7 +52,9 @@ namespace NetworkingLibrary.Client
             return true;
         }
 
-        public bool ReceiveFromAll(byte[] buffer, ref EndPoint endPoint)
-            => ReceiveFromAll(buffer, ref endPoint);
+        public virtual bool ReceiveFromAll(byte[] buffer, ref EndPoint endPoint)
+            => ReceiveFromAll(buffer, buffer.Length, ref endPoint);
+
+        
     }
 }

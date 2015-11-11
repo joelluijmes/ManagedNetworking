@@ -37,5 +37,8 @@ namespace NetworkingLibrary.Client
 
             return client;
         }
+
+        public T ConvertTo<T>() where T : BaseClient
+            => CreateClient<T>(_socket);
     }
 }

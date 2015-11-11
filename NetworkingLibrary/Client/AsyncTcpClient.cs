@@ -13,13 +13,7 @@ namespace NetworkingLibrary.Client
         {
             _pool = new Pool<SocketAsyncEventArgs>();
         }
-
-        internal AsyncTcpClient(Socket socket)
-        {
-            _socket = socket;
-            _pool = new Pool<SocketAsyncEventArgs>();
-        }
-
+        
         public async Task<bool> ConnectAsync(EndPoint endPoint)
         {
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async

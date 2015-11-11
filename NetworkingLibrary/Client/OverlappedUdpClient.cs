@@ -9,7 +9,7 @@ namespace NetworkingLibrary.Client
     {
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
-
+                
         public override int SendTo(byte[] buffer, int offset, int count, EndPoint endPoint)
         {
             _socket.BeginSendTo(buffer, offset, count, SocketFlags.None, endPoint, (result) =>
@@ -41,6 +41,9 @@ namespace NetworkingLibrary.Client
             _socket.BeginSendTo(buffer, totalSent, count - totalSent, SocketFlags.None, endPoint, sendCallback, null);
             return true;
         }
+
+        public override bool SendToAll(byte[] buffer, EndPoint endPoint)
+            => SendToAll(buffer, buffer.Length, endPoint);
 
         public override int ReceiveFrom(byte[] buffer, int offset, int count, ref EndPoint endPoint)
         {
@@ -75,5 +78,8 @@ namespace NetworkingLibrary.Client
             _socket.BeginReceiveFrom(buffer, totalReceived, count - totalReceived, SocketFlags.None, ref endPoint, receiveCallback, null);
             return true;
         }
+
+        public override bool ReceiveFromAll(byte[] buffer, ref EndPoint endPoint)
+            => ReceiveFromAll(buffer, buffer.Length, ref endPoint);
     }
 }
