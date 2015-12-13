@@ -15,6 +15,9 @@ namespace NetworkingLibrary.Client
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
 
+        private delegate IAsyncResult BeginSocketTransferFunc(byte[] buffer, int offset, int count, SocketFlags socketFlags, AsyncCallback callback, object state);
+        private delegate int EndSocketTransferFunc(IAsyncResult result);
+        
         public void BeginConnect(EndPoint endPoint)
         {
             try
@@ -33,58 +36,55 @@ namespace NetworkingLibrary.Client
 
         public void BeginSend(byte[] buffer, int offset, int count)
         {
-            _socket.BeginSend(buffer, offset, count, SocketFlags.None, (result) =>
-            {
-                var sent = _socket.EndSend(result);
-
-                SendCompleted?.Invoke(this, new TransferEventArgs(this, buffer, sent));
-            }, null);
+            BeginTransfer(_socket.BeginSend, _socket.EndSend, buffer, offset, count, SendCompleted);
         }
 
         public void BeginSendAll(byte[] buffer, int count)
         {
-            var totalSent = 0;
-            AsyncCallback sendCallback = null;
-
-            sendCallback = (result) =>
-            {
-                var sent = _socket.EndSend(result);
-                totalSent += sent;
-
-                if (totalSent < count)
-                    _socket.BeginSend(buffer, totalSent, count - totalSent, SocketFlags.None, sendCallback, null);
-                else
-                    SendCompleted?.Invoke(this, new TransferEventArgs(this, buffer, totalSent));
-            };
-
-            _socket.BeginSend(buffer, totalSent, count - totalSent, SocketFlags.None, sendCallback, null);
+            BeginTransferAll(_socket.BeginSend, _socket.EndSend, buffer, count, SendCompleted);
         }
 
         public void BeginReceive(byte[] buffer, int offset, int count)
         {
-            _socket.BeginReceive(buffer, offset, count, SocketFlags.None, (result) =>
-            {
-                var received = _socket.EndReceive(result);
-
-                ReceiveCompleted?.Invoke(this, new TransferEventArgs(this, buffer, received));
-            }, null);
+            BeginTransfer(_socket.BeginReceive, _socket.EndReceive, buffer, offset, count, ReceiveCompleted);
         }
 
         public void BeginReceiveAll(byte[] buffer, int count)
         {
-            var totalReceived = 0;
-            AsyncCallback receiveCallback = null;
+            BeginTransferAll(_socket.BeginReceive, _socket.EndReceive, buffer, count, ReceiveCompleted);
+        }
 
-            receiveCallback = (result) =>
+        private void BeginTransfer(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int offset, int count, EventHandler<TransferEventArgs> completedHandler)
+        {
+            beginFunc(buffer, offset, count, SocketFlags.None, result =>
             {
-                var received = _socket.EndReceive(result);
-                totalReceived += received;
+                var transfered = endFunc(result);
+                // TODO: Error handling
 
-                if (totalReceived < count)
-                    _socket.BeginReceive(buffer, totalReceived, count - totalReceived, SocketFlags.None, receiveCallback, null);
+                completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
+            }, null);
+        }
+
+        private void BeginTransferAll(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int count, EventHandler<TransferEventArgs> completedHandler)
+        {
+            var transfered = 0;
+            AsyncCallback callback = null;
+
+            callback = result =>
+            {
+                var current = endFunc(result);
+                transfered += current;
+
+                if (transfered < count)
+                    beginFunc(buffer, transfered, count - transfered, SocketFlags.None, callback, null);
                 else
-                    ReceiveCompleted?.Invoke(this, new TransferEventArgs(this, buffer, totalReceived));
+                    completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, count));
+
+                // TODO: Error handling
+                completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
             };
+
+            beginFunc(buffer, transfered, count - transfered, SocketFlags.None, callback, null);
         }
     }
 }

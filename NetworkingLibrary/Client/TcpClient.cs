@@ -10,6 +10,9 @@ namespace NetworkingLibrary.Client
     {
         public TcpClient() : base(ProtocolType.Tcp) { }
         internal TcpClient(Socket socket) : base(socket) { }
+
+        private delegate int SocketTransferFunc(byte[] buffer, int offset, int count, SocketFlags socketFlags, out SocketError socketError);
+        private delegate int TransferFunc(byte[] buffer, int offset, int count);
         
         public bool Connect(EndPoint endPoint)
         {
@@ -33,40 +36,40 @@ namespace NetworkingLibrary.Client
         }
 
         public int Send(byte[] buffer, int offset, int count)
-            => _socket.Send(buffer, offset, count, SocketFlags.None);
-        
+            => Transfer(_socket.Send, buffer, offset, count);
+
         public bool SendAll(byte[] buffer, int count)
-            => TransceiveAll(Send, buffer, count);
+            => TransferAll(Send, buffer, count);
         
         public int Receive(byte[] buffer, int offset, int count)
+            => Transfer(_socket.Receive, buffer, offset, count);
+
+        public bool ReceiveAll(byte[] buffer, int count)
+            => TransferAll(Receive, buffer, count);
+
+        private static int Transfer(SocketTransferFunc func, byte[] buffer, int offset, int count)
         {
             SocketError error;
-            var received = _socket.Receive(buffer, offset, count, SocketFlags.None, out error);
+            var transfered = func(buffer, offset, count, SocketFlags.None, out error);
 
-            // TODO: Add some more handling?
+            // TODO: Add error handling
             if (error != SocketError.Success)
                 throw new SocketException((int)error);
 
-            // recv returns 0 -> gracefully shutdown
-            if (received == 0)
-                _socket.Shutdown(SocketShutdown.Both);
-
-            return received;
+            return transfered;
         }
-        
-        public bool ReceiveAll(byte[] buffer, int count)
-            => TransceiveAll(Receive, buffer, count);
-        
-        private static bool TransceiveAll(Func<byte[], int, int, int> func, byte[] buffer, int count)
+
+        private static bool TransferAll(TransferFunc func, byte[] buffer, int count)
         {
-            var total = 0;
-            while (total < count)
+            var transfered = 0;
+            while (transfered < count)
             {
-                var current = func(buffer, total, count - total);
+                var current = func(buffer, transfered, count - transfered);
                 if (current == 0)
+                    // TODO: Error or..?
                     return false;
 
-                total += current;
+                transfered += current;
             }
 
             return true;
