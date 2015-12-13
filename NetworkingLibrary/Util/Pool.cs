@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace NetworkingLibrary
+namespace NetworkingLibrary.Util
 {
     internal sealed class Pool<T>
     {
-        private readonly ConcurrentBag<T> _internalBag;
         private readonly Func<T> _generator;
+        private readonly ConcurrentBag<T> _internalBag;
 
-        public Pool() : this(() => Activator.CreateInstance<T>())
-        { }            
+        public Pool() : this(Activator.CreateInstance<T>)
+        {
+        }
 
         public Pool(Func<T> generator)
         {
@@ -20,10 +21,9 @@ namespace NetworkingLibrary
         public T Get()
         {
             T item;
-            if (_internalBag.TryTake(out item))
-                return item;
-
-            return _generator();
+            return _internalBag.TryTake(out item)
+                ? item :
+                _generator();
         }
 
         public void Put(T item)

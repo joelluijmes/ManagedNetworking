@@ -6,11 +6,11 @@ using System.Net.Sockets;
 
 namespace NetworkingLibrary.Client
 {
-    public class TcpClient : BaseClient, ITcpClient
+    public sealed partial class TcpClient : BaseClient, ITcpClient
     {
         public TcpClient() : base(ProtocolType.Tcp) { }
         
-        public virtual bool Connect(EndPoint endPoint)
+        public bool Connect(EndPoint endPoint)
         {
             try
             {
@@ -22,8 +22,8 @@ namespace NetworkingLibrary.Client
                 return false;
             }
         }
-
-        public virtual bool ConnectAny(IEnumerable<EndPoint> endPoints, out EndPoint endPoint)
+        
+        public bool ConnectAny(IEnumerable<EndPoint> endPoints, out EndPoint endPoint)
         {
             var connectedEndPoint = endPoints.Where(Connect).FirstOrDefault();
             endPoint = connectedEndPoint;
@@ -31,16 +31,13 @@ namespace NetworkingLibrary.Client
             return connectedEndPoint != default(EndPoint);
         }
 
-        public virtual int Send(byte[] buffer, int offset, int count)
+        public int Send(byte[] buffer, int offset, int count)
             => _socket.Send(buffer, offset, count, SocketFlags.None);
         
-        public virtual bool SendAll(byte[] buffer, int count)
+        public bool SendAll(byte[] buffer, int count)
             => TransceiveAll(Send, buffer, count);
-
-        public bool SendAll(byte[] buffer)
-            => SendAll(buffer, buffer.Length);
         
-        public virtual int Receive(byte[] buffer, int offset, int count)
+        public int Receive(byte[] buffer, int offset, int count)
         {
             SocketError error;
             var received = _socket.Receive(buffer, offset, count, SocketFlags.None, out error);
@@ -56,11 +53,8 @@ namespace NetworkingLibrary.Client
             return received;
         }
         
-        public virtual bool ReceiveAll(byte[] buffer, int count)
+        public bool ReceiveAll(byte[] buffer, int count)
             => TransceiveAll(Receive, buffer, count);
-
-        public bool ReceiveAll(byte[] buffer)
-            => ReceiveAll(buffer, buffer.Length);
         
         private bool TransceiveAll(Func<byte[], int, int, int> func, byte[] buffer, int count)
         {

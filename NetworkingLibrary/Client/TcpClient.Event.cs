@@ -1,17 +1,21 @@
-﻿using NetworkingLibrary.Events;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using NetworkingLibrary.Events;
 
 namespace NetworkingLibrary.Client
 {
-    public class OverlappedTcpClient : TcpClient, IOverlappedClient
+    public sealed partial class TcpClient : IEventTcpClient
     {
         public event EventHandler<ClientEventArgs> ClientConnected;
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
-        
-        public override bool Connect(EndPoint endPoint)
+
+        public void BeginConnect(EndPoint endPoint)
         {
             try
             {
@@ -20,15 +24,14 @@ namespace NetworkingLibrary.Client
                     _socket.EndConnect(result);
                     ClientConnected?.Invoke(this, new ClientEventArgs(this));
                 }, null);
-                return true;
             }
             catch
             {
-                return false;
+                // TODO: Add error handling
             }
         }
-        
-        public override int Send(byte[] buffer, int offset, int count)
+
+        public void BeginSend(byte[] buffer, int offset, int count)
         {
             _socket.BeginSend(buffer, offset, count, SocketFlags.None, (result) =>
             {
@@ -36,11 +39,9 @@ namespace NetworkingLibrary.Client
 
                 SendCompleted?.Invoke(this, new TransferEventArgs(this, buffer, sent));
             }, null);
-
-            return 0;
         }
-        
-        public override bool SendAll(byte[] buffer, int count)
+
+        public void BeginSendAll(byte[] buffer, int count)
         {
             var totalSent = 0;
             AsyncCallback sendCallback = null;
@@ -57,22 +58,19 @@ namespace NetworkingLibrary.Client
             };
 
             _socket.BeginSend(buffer, totalSent, count - totalSent, SocketFlags.None, sendCallback, null);
-            return true;
         }
 
-        public override int Receive(byte[] buffer, int offset, int count)
+        public void BeginReceive(byte[] buffer, int offset, int count)
         {
             _socket.BeginReceive(buffer, offset, count, SocketFlags.None, (result) =>
             {
                 var received = _socket.EndReceive(result);
-                
+
                 ReceiveCompleted?.Invoke(this, new TransferEventArgs(this, buffer, received));
             }, null);
-
-            return 0;
         }
-        
-        public override bool ReceiveAll(byte[] buffer, int count)
+
+        public void BeginReceiveAll(byte[] buffer, int count)
         {
             var totalReceived = 0;
             AsyncCallback receiveCallback = null;
@@ -87,8 +85,6 @@ namespace NetworkingLibrary.Client
                 else
                     ReceiveCompleted?.Invoke(this, new TransferEventArgs(this, buffer, totalReceived));
             };
-
-            return true;
         }
     }
 }
