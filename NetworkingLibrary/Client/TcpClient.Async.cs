@@ -85,7 +85,7 @@ namespace NetworkingLibrary.Client
         public Task<bool> ReceiveAllAsync(byte[] buffer, int count)
             => TransceiveAllAsync(ReceiveAsync, buffer, count);
 
-        private async Task<bool> TransceiveAllAsync(Func<byte[], int, int, Task<int>> func, byte[] buffer, int count)
+        private static async Task<bool> TransceiveAllAsync(Func<byte[], int, int, Task<int>> func, byte[] buffer, int count)
         {
             var total = 0;
             while (total < count)

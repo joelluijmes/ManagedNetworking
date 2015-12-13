@@ -9,6 +9,7 @@ namespace NetworkingLibrary.Client
     public sealed partial class TcpClient : BaseClient, ITcpClient
     {
         public TcpClient() : base(ProtocolType.Tcp) { }
+        internal TcpClient(Socket socket) : base(socket) { }
         
         public bool Connect(EndPoint endPoint)
         {
@@ -56,7 +57,7 @@ namespace NetworkingLibrary.Client
         public bool ReceiveAll(byte[] buffer, int count)
             => TransceiveAll(Receive, buffer, count);
         
-        private bool TransceiveAll(Func<byte[], int, int, int> func, byte[] buffer, int count)
+        private static bool TransceiveAll(Func<byte[], int, int, int> func, byte[] buffer, int count)
         {
             var total = 0;
             while (total < count)

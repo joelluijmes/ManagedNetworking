@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using Util;
 
 namespace NetworkingLibrary.Client
 {
@@ -18,27 +17,22 @@ namespace NetworkingLibrary.Client
           
         protected BaseClient(ProtocolType type)
         {
-            if (type == ProtocolType.Udp)
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, type);
-            else if (type == ProtocolType.Tcp)
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, type);
-            else
-                throw new NotImplementedException("Unable to instantiate non tcp/udp client.");
+            switch (type)
+            {
+                case ProtocolType.Udp:
+                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, type);
+                    break;
+                case ProtocolType.Tcp:
+                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, type);
+                    break;
+                default:
+                    throw new NotImplementedException("Unable to instantiate non tcp/udp client.");
+            }
         }
 
-        internal static T CreateClient<T>(Socket socket) where T : BaseClient
+        internal BaseClient(Socket socket)
         {
-            var constructor = typeof(T).GetConstructor(Type.EmptyTypes);
-            var client = Creator<T>.GetCreator(constructor).Invoke(null);
-
-            client._socket = socket;
-            if (client._socket.Connected)
-                client._stream = new NetworkStream(client._socket, false);
-
-            return client;
+            _socket = socket;
         }
-
-        public T ConvertTo<T>() where T : BaseClient
-            => CreateClient<T>(_socket);
     }
 }
