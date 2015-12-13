@@ -1,15 +1,13 @@
-﻿using NetworkingLibrary.Client;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using Util;
-using System;
+using TcpClient = NetworkingLibrary.Client.TcpClient;
 
 namespace NetworkingLibrary.Server
 {
-    public class Server : BaseServer
+    public partial class Server : IServer
     {
         private const int BACKLOG = 200;
-        protected Socket _socket;
+        private Socket _socket;
 
         public Server()
         {
@@ -30,8 +28,11 @@ namespace NetworkingLibrary.Server
             _socket.Close();
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
-
-        protected override Socket AcceptClient()
-            => _socket.Accept();
+        
+        public TcpClient AcceptClient()
+        {
+            var clientSocket = _socket.Accept();
+            return new TcpClient(clientSocket);
+        }
     }
 }
