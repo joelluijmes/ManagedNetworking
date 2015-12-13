@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NetworkingLibrary.Client;
 using NetworkingLibrary.Events;
 
@@ -14,7 +10,13 @@ namespace NetworkingLibrary.Server
 
         public void BeginAccept()
         {
-            throw new NotImplementedException();
+            _socket.BeginAccept((result) =>
+            {
+                var clientSocket = _socket.EndAccept(result);
+                var client = new TcpClient(clientSocket);
+
+                ClientConnected?.Invoke(this, new ClientEventArgs(client));
+            }, null);
         }
     }
 }
