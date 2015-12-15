@@ -6,86 +6,102 @@ using NetworkingLibrary.Util;
 
 namespace NetworkingLibrary.Client
 {
-    public sealed partial class TcpClient : IAsyncTcpClient
-    {
-        private static readonly Pool<SocketAsyncEventArgs> _pool = new Pool<SocketAsyncEventArgs>();
+	public sealed partial class TcpClient : IAsyncTcpClient
+	{
+		private static readonly Pool<SocketAsyncEventArgs> _pool = new Pool<SocketAsyncEventArgs>();
 
-        private delegate bool SocketTransferAsyncFunc(SocketAsyncEventArgs args);
+		private delegate bool SocketTransferAsyncFunc(SocketAsyncEventArgs args);
 
-        private delegate Task<int> TransferAsyncFunc(byte[] buffer, int offset, int count);
+		private delegate Task<int> TransferAsyncFunc(byte[] buffer, int offset, int count);
 		
-        public async Task<bool> ConnectAsync(EndPoint endPoint)
-        {
+		public async Task<bool> ConnectAsync(EndPoint endPoint)
+		{
+			var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
+			EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
+			{
+				tcs.SetResult(true);
+			};
+
+			var socketArgs = _pool.Get();
+			socketArgs.Completed += completedEventHandler;
+			socketArgs.RemoteEndPoint = endPoint;
+
+			if (_socket.ConnectAsync(socketArgs))           // running async
+				await tcs.Task;                             // so wait for completion
+
+			socketArgs.Completed -= completedEventHandler;
+
+			var success = socketArgs.SocketError == SocketError.Success;
+			_pool.Put(socketArgs);
+
+			return success;
+		}
+
+		public Task<int> SendAsync(byte[] buffer, int offset = 0, int count = -1)
+			=> TransferAsync(_socket.SendAsync, buffer, offset, count);
+
+		public Task<bool> SendAllAsync(byte[] buffer, int count = -1)
+			=> TransferAllAsync(SendAsync, buffer, count);
+
+		public Task<int> ReceiveAsync(byte[] buffer, int offset = 0, int count = -1)
+			=> TransferAsync(_socket.ReceiveAsync, buffer, offset, count);
+
+		public Task<bool> ReceiveAllAsync(byte[] buffer, int count = -1)
+			=> TransferAllAsync(ReceiveAsync, buffer, count);
+
+		private static async Task<int> TransferAsync(SocketTransferAsyncFunc func, byte[] buffer, int offset, int count)
+		{
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (offset < 0)
+                throw new ArgumentException("Offset must be positive.", nameof(offset));
+            if (count == -1)
+                count = buffer.Length;
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
+
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
-            EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
-            {
-                tcs.SetResult(true);
-            };
+			EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
+			{
+				tcs.SetResult(true);
+			};
 
-            var socketArgs = _pool.Get();
-            socketArgs.Completed += completedEventHandler;
-            socketArgs.RemoteEndPoint = endPoint;
+			var socketArgs = _pool.Get();
+			socketArgs.Completed += completedEventHandler;
+			socketArgs.SetBuffer(buffer, offset, count);
 
-            if (_socket.ConnectAsync(socketArgs))           // running async
-                await tcs.Task;                             // so wait for completion
+			if (func(socketArgs))                           // running async
+				await tcs.Task;                             // so wait for completion
 
-            socketArgs.Completed -= completedEventHandler;
+			socketArgs.Completed -= completedEventHandler;
 
-            var success = socketArgs.SocketError == SocketError.Success;
-            _pool.Put(socketArgs);
+			// TODO: More error handling
+			var success = socketArgs.SocketError == SocketError.Success;
+			_pool.Put(socketArgs);
 
-            return success;
-        }
+			return success ? socketArgs.BytesTransferred : 0;
+		}
 
-        public Task<int> SendAsync(byte[] buffer, int offset, int count)
-            => TransferAsync(_socket.SendAsync, buffer, offset, count);
+		private static async Task<bool> TransferAllAsync(TransferAsyncFunc func, byte[] buffer, int count)
+		{
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (count == -1)
+                count = buffer.Length;
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
 
-        public Task<bool> SendAllAsync(byte[] buffer, int count)
-            => TransferAllAsync(SendAsync, buffer, count);
-
-        public Task<int> ReceiveAsync(byte[] buffer, int offset, int count)
-            => TransferAsync(_socket.ReceiveAsync, buffer, offset, count);
-
-        public Task<bool> ReceiveAllAsync(byte[] buffer, int count)
-            => TransferAllAsync(ReceiveAsync, buffer, count);
-
-        private static async Task<int> TransferAsync(SocketTransferAsyncFunc func, byte[] buffer, int offset, int count)
-        {
-            var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
-            EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
-            {
-                tcs.SetResult(true);
-            };
-
-            var socketArgs = _pool.Get();
-            socketArgs.Completed += completedEventHandler;
-            socketArgs.SetBuffer(buffer, offset, count);
-
-            if (func(socketArgs))                           // running async
-                await tcs.Task;                             // so wait for completion
-
-            socketArgs.Completed -= completedEventHandler;
-
-            // TODO: More error handling
-            var success = socketArgs.SocketError == SocketError.Success;
-            _pool.Put(socketArgs);
-
-            return success ? socketArgs.BytesTransferred : 0;
-        }
-
-        private static async Task<bool> TransferAllAsync(TransferAsyncFunc func, byte[] buffer, int count)
-        {
             var total = 0;
-            while (total < count)
-            {
-                var current = await func(buffer, total, count - total);
-                if (current == 0)
-                    return false;
+			while (total < count)
+			{
+				var current = await func(buffer, total, count - total);
+				if (current == 0)
+					return false;
 
-                total += current;
-            }
+				total += current;
+			}
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 }

@@ -34,28 +34,37 @@ namespace NetworkingLibrary.Client
             }
         }
 
-        public void BeginSend(byte[] buffer, int offset, int count)
+        public void BeginSend(byte[] buffer, int offset = 0, int count = -1)
         {
             BeginTransfer(_socket.BeginSend, _socket.EndSend, buffer, offset, count, SendCompleted);
         }
 
-        public void BeginSendAll(byte[] buffer, int count)
+        public void BeginSendAll(byte[] buffer, int count = -1)
         {
             BeginTransferAll(_socket.BeginSend, _socket.EndSend, buffer, count, SendCompleted);
         }
 
-        public void BeginReceive(byte[] buffer, int offset, int count)
+        public void BeginReceive(byte[] buffer, int offset = 0, int count = -1)
         {
             BeginTransfer(_socket.BeginReceive, _socket.EndReceive, buffer, offset, count, ReceiveCompleted);
         }
 
-        public void BeginReceiveAll(byte[] buffer, int count)
+        public void BeginReceiveAll(byte[] buffer, int count = -1)
         {
             BeginTransferAll(_socket.BeginReceive, _socket.EndReceive, buffer, count, ReceiveCompleted);
         }
 
         private void BeginTransfer(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int offset, int count, EventHandler<TransferEventArgs> completedHandler)
         {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (offset < 0)
+                throw new ArgumentException("Offset must be positive.", nameof(offset));
+            if (count == -1)
+                count = buffer.Length;
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
+
             beginFunc(buffer, offset, count, SocketFlags.None, result =>
             {
                 var transfered = endFunc(result);
@@ -67,6 +76,13 @@ namespace NetworkingLibrary.Client
 
         private void BeginTransferAll(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int count, EventHandler<TransferEventArgs> completedHandler)
         {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (count == -1)
+                count = buffer.Length;
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
+
             var transfered = 0;
             AsyncCallback callback = null;
 

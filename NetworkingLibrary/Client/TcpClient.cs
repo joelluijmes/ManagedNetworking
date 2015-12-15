@@ -35,20 +35,29 @@ namespace NetworkingLibrary.Client
             return connectedEndPoint != default(EndPoint);
         }
 
-        public int Send(byte[] buffer, int offset, int count)
+        public int Send(byte[] buffer, int offset = 0, int count = -1)
             => Transfer(_socket.Send, buffer, offset, count);
 
-        public bool SendAll(byte[] buffer, int count)
+        public bool SendAll(byte[] buffer, int count = -1)
             => TransferAll(Send, buffer, count);
         
-        public int Receive(byte[] buffer, int offset, int count)
+        public int Receive(byte[] buffer, int offset = 0, int count = -1)
             => Transfer(_socket.Receive, buffer, offset, count);
 
-        public bool ReceiveAll(byte[] buffer, int count)
+        public bool ReceiveAll(byte[] buffer, int count = -1)
             => TransferAll(Receive, buffer, count);
 
         private static int Transfer(SocketTransferFunc func, byte[] buffer, int offset, int count)
         {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (offset < 0)
+                throw new ArgumentException("Offset must be positive.", nameof(offset));
+            if (count == -1)
+                count = buffer.Length;
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
+
             SocketError error;
             var transfered = func(buffer, offset, count, SocketFlags.None, out error);
 
@@ -61,6 +70,13 @@ namespace NetworkingLibrary.Client
 
         private static bool TransferAll(TransferFunc func, byte[] buffer, int count)
         {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (count == -1)
+                count = buffer.Length;
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
+
             var transfered = 0;
             while (transfered < count)
             {
