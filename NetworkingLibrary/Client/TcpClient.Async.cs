@@ -38,28 +38,31 @@ namespace NetworkingLibrary.Client
 		}
 
 		public Task<int> SendAsync(byte[] buffer, int offset = 0, int count = -1)
-			=> TransferAsync(Socket.SendAsync, buffer, offset, count);
-
-		public Task<bool> SendAllAsync(byte[] buffer, int count = -1)
-			=> TransferAllAsync(SendAsync, buffer, count);
-
-		public Task<int> ReceiveAsync(byte[] buffer, int offset = 0, int count = -1)
-			=> TransferAsync(Socket.ReceiveAsync, buffer, offset, count);
-
-		public Task<bool> ReceiveAllAsync(byte[] buffer, int count = -1)
-			=> TransferAllAsync(ReceiveAsync, buffer, count);
-
-		private static async Task<int> TransferAsync(SocketTransferAsyncFunc func, byte[] buffer, int offset, int count)
 		{
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
-            if (offset < 0)
-                throw new ArgumentException("Offset must be positive.", nameof(offset));
-            if (count == -1)
-                count = buffer.Length;
-            if (count <= 0)
-                throw new ArgumentException("Count must be greater than 0", nameof(count));
+            ValidateTransferArguments(buffer, offset, ref count);
+            return TransferAsync(Socket.SendAsync, buffer, offset, count);
+		}
 
+	    public Task<bool> SendAllAsync(byte[] buffer, int count = -1)
+	    {
+            ValidateTransferAllArguments(buffer, ref count);
+            return TransferAllAsync(SendAsync, buffer, count);
+	    }
+
+	    public Task<int> ReceiveAsync(byte[] buffer, int offset = 0, int count = -1)
+	    {
+            ValidateTransferArguments(buffer, offset, ref count);
+            return TransferAsync(Socket.ReceiveAsync, buffer, offset, count);
+	    }
+
+	    public Task<bool> ReceiveAllAsync(byte[] buffer, int count = -1)
+	    {
+            ValidateTransferAllArguments(buffer, ref count);
+            return TransferAllAsync(ReceiveAsync, buffer, count);
+	    }
+
+	    private static async Task<int> TransferAsync(SocketTransferAsyncFunc func, byte[] buffer, int offset, int count)
+		{
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
 			EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
 			{
@@ -84,13 +87,6 @@ namespace NetworkingLibrary.Client
 
 		private static async Task<bool> TransferAllAsync(TransferAsyncFunc func, byte[] buffer, int count)
 		{
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
-            if (count == -1)
-                count = buffer.Length;
-            if (count <= 0)
-                throw new ArgumentException("Count must be greater than 0", nameof(count));
-
             var total = 0;
 			while (total < count)
 			{

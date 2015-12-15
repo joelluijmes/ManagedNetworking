@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Channels;
+using NetworkingLibrary.Events;
 
 namespace NetworkingLibrary.Client
 {
@@ -10,6 +12,8 @@ namespace NetworkingLibrary.Client
     {
         public TcpClient() : base(ProtocolType.Tcp) { }
         internal TcpClient(Socket socket) : base(socket) { }
+
+        public bool EventOnDisconnect { get; set; } = true;
 
         private delegate int SocketTransferFunc(byte[] buffer, int offset, int count, SocketFlags socketFlags, out SocketError socketError);
         private delegate int TransferFunc(byte[] buffer, int offset, int count);
@@ -51,49 +55,54 @@ namespace NetworkingLibrary.Client
         }
 
         public int Send(byte[] buffer, int offset = 0, int count = -1)
-            => Transfer(Socket.Send, buffer, offset, count);
+        {
+            ValidateTransferArguments(buffer, offset, ref count);
+            return Transfer(Socket.Send, buffer, offset, count);
+        }
 
         public bool SendAll(byte[] buffer, int count = -1)
-            => TransferAll(Send, buffer, count);
-        
+        {
+            ValidateTransferAllArguments(buffer, ref count);
+            return TransferAll(Send, buffer, count);
+        }
+
         public int Receive(byte[] buffer, int offset = 0, int count = -1)
-            => Transfer(Socket.Receive, buffer, offset, count);
+        {
+            ValidateTransferArguments(buffer, offset, ref count);
+            return Transfer(Socket.Receive, buffer, offset, count);
+        }
 
         public bool ReceiveAll(byte[] buffer, int count = -1)
-            => TransferAll(Receive, buffer, count);
-
-        private static int Transfer(SocketTransferFunc func, byte[] buffer, int offset, int count)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
-            if (offset < 0)
-                throw new ArgumentException("Offset must be positive.", nameof(offset));
-            if (count == -1)
-                count = buffer.Length;
-            if (count <= 0)
-                throw new ArgumentException("Count must be greater than 0", nameof(count));
+            ValidateTransferAllArguments(buffer, ref count);
+            return TransferAll(Receive, buffer, count);
+        }
 
+        private int Transfer(SocketTransferFunc func, byte[] buffer, int offset, int count)
+        {
             SocketError error;
             var transfered = func(buffer, offset, count, SocketFlags.None, out error);
-            if (transfered == 0)
-                return 0;
 
             // TODO: Add error handling
-            if (error != SocketError.Success)
-                throw new SocketException((int)error);
+
+            switch (error)
+            {
+                case SocketError.Success:
+                    break;
+
+                //case SocketError.ConnectionReset:   // disconnected :(
+                //    Disconnected = true;
+                //    break;
+
+                default:
+                    throw new InvalidOperationException("Unhandled socket error!", new SocketException((int)error));
+            }
 
             return transfered;
         }
 
         private static bool TransferAll(TransferFunc func, byte[] buffer, int count)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
-            if (count == -1)
-                count = buffer.Length;
-            if (count <= 0)
-                throw new ArgumentException("Count must be greater than 0", nameof(count));
-
             var transfered = 0;
             while (transfered < count)
             {

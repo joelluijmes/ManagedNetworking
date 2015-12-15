@@ -12,6 +12,7 @@ namespace NetworkingLibrary.Client
     public sealed partial class TcpClient : IEventTcpClient
     {
         public event EventHandler<ClientEventArgs> ClientConnected;
+        public event EventHandler<ClientEventArgs> CliendDisconnected; 
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
 
@@ -36,34 +37,31 @@ namespace NetworkingLibrary.Client
 
         public void BeginSend(byte[] buffer, int offset = 0, int count = -1)
         {
+            ValidateTransferArguments(buffer, offset, ref count);
             BeginTransfer(Socket.BeginSend, Socket.EndSend, buffer, offset, count, SendCompleted);
         }
 
         public void BeginSendAll(byte[] buffer, int count = -1)
         {
+            ValidateTransferAllArguments(buffer, ref count);
             BeginTransferAll(Socket.BeginSend, Socket.EndSend, buffer, count, SendCompleted);
         }
 
         public void BeginReceive(byte[] buffer, int offset = 0, int count = -1)
         {
+            ValidateTransferArguments(buffer, offset, ref count);
             BeginTransfer(Socket.BeginReceive, Socket.EndReceive, buffer, offset, count, ReceiveCompleted);
         }
 
         public void BeginReceiveAll(byte[] buffer, int count = -1)
         {
+            ValidateTransferAllArguments(buffer, ref count);
             BeginTransferAll(Socket.BeginReceive, Socket.EndReceive, buffer, count, ReceiveCompleted);
         }
 
         private void BeginTransfer(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int offset, int count, EventHandler<TransferEventArgs> completedHandler)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
-            if (offset < 0)
-                throw new ArgumentException("Offset must be positive.", nameof(offset));
-            if (count == -1)
-                count = buffer.Length;
-            if (count <= 0)
-                throw new ArgumentException("Count must be greater than 0", nameof(count));
+            ValidateTransferArguments(buffer, offset, ref count);
 
             beginFunc(buffer, offset, count, SocketFlags.None, result =>
             {
@@ -76,13 +74,6 @@ namespace NetworkingLibrary.Client
 
         private void BeginTransferAll(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int count, EventHandler<TransferEventArgs> completedHandler)
         {
-            if (buffer == null)
-                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
-            if (count == -1)
-                count = buffer.Length;
-            if (count <= 0)
-                throw new ArgumentException("Count must be greater than 0", nameof(count));
-
             var transfered = 0;
             AsyncCallback callback = null;
 

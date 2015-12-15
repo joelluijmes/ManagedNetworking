@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
@@ -78,6 +79,23 @@ namespace NetworkingLibrary.Client
                 default:
                     throw new NotImplementedException("Unable to instantiate non tcp/udp client.");
             }
+        }
+
+        protected static void ValidateTransferArguments(byte[] buffer, int offset, ref int count)
+        {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer), "Buffer cannot be null");
+            if (count == -1)
+                count = buffer.Length;
+            if (offset < 0)
+                throw new ArgumentException("Offset must be positive.", nameof(offset));
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0", nameof(count));
+        }
+
+        protected static void ValidateTransferAllArguments(byte[] buffer, ref int count)
+        {
+            ValidateTransferArguments(buffer, 0, ref count);
         }
     }
 }
