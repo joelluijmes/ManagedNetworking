@@ -1,38 +1,83 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 
 namespace NetworkingLibrary.Client
 {
-    public abstract class BaseClient
+    public abstract class BaseClient : IDisposable
     {
-        protected Socket _socket;
-        
-        public EndPoint RemoteEndPoint => _socket?.RemoteEndPoint;
-        public EndPoint LocalEndPoint => _socket?.LocalEndPoint;
+        private readonly ProtocolType _type;
+        private Socket _socket;
 
-        private NetworkStream _stream;
-        public NetworkStream NetworkStream
-            => _stream ?? (_stream = (_socket?.Connected == true ? new NetworkStream(_socket, false) : null));
+        protected Socket Socket
+        {
+            get { return _socket; }
+            set
+            {
+                _socket = value;
+                NetworkStream?.Dispose();
+
+                if (_socket?.Connected == true)
+                    NetworkStream = new NetworkStream(_socket, false);
+            }
+        }
+        
+        public EndPoint RemoteEndPoint => Socket?.RemoteEndPoint;
+        public EndPoint LocalEndPoint => Socket?.LocalEndPoint;
+
+        public NetworkStream NetworkStream { get; private set; }
           
         protected BaseClient(ProtocolType type)
         {
-            switch (type)
-            {
-                case ProtocolType.Udp:
-                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, type);
-                    break;
-                case ProtocolType.Tcp:
-                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, type);
-                    break;
-                default:
-                    throw new NotImplementedException("Unable to instantiate non tcp/udp client.");
-            }
+            _type = type;
+            Socket = CreateSocket(type);
         }
 
         internal BaseClient(Socket socket)
         {
-            _socket = socket;
+            _type = socket.ProtocolType;
+            Socket = socket;
+        }
+
+        public void Dispose()
+        {
+            if (Socket != null)
+            {
+                if (Socket.Connected)
+                    Socket.Shutdown(SocketShutdown.Both);
+
+                Socket.Close();
+                Socket.Dispose();
+                Socket = null;
+            }
+
+            if (NetworkStream != null)
+            {
+                NetworkStream.Dispose();
+                NetworkStream = null;
+            }
+        }
+
+        protected void CreateSocket()
+        {
+            if (Socket != null)
+                throw new InvalidOperationException("There is already a socket! Disconnect first before creating a new one.");
+
+            Socket = CreateSocket(_type);
+        }
+
+        private static Socket CreateSocket(ProtocolType type)
+        {
+            switch (type)
+            {
+                case ProtocolType.Udp:
+                    return new Socket(AddressFamily.InterNetwork, SocketType.Dgram, type);
+                case ProtocolType.Tcp:
+                    return new Socket(AddressFamily.InterNetwork, SocketType.Stream, type);
+                default:
+                    throw new NotImplementedException("Unable to instantiate non tcp/udp client.");
+            }
         }
     }
 }

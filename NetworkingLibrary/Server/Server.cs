@@ -26,6 +26,7 @@ namespace NetworkingLibrary.Server
         public void Stop()
         {
             _socket.Close();
+
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
         

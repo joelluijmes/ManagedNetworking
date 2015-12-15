@@ -18,7 +18,7 @@ namespace NetworkingLibrary.Client
         {
             try
             {
-                _socket.Connect(endPoint);
+                Socket.Connect(endPoint);
                 return true;
             }
             catch
@@ -35,14 +35,29 @@ namespace NetworkingLibrary.Client
             return connectedEndPoint != default(EndPoint);
         }
 
+        public void Disconnect(bool createNewSocket = true)
+        {
+            if (Socket == null)
+                return;
+
+            Socket.Shutdown(SocketShutdown.Both);
+            Socket.Close();
+
+            if (!createNewSocket)
+                return;
+
+            Socket.Dispose();
+            CreateSocket();
+        }
+
         public int Send(byte[] buffer, int offset = 0, int count = -1)
-            => Transfer(_socket.Send, buffer, offset, count);
+            => Transfer(Socket.Send, buffer, offset, count);
 
         public bool SendAll(byte[] buffer, int count = -1)
             => TransferAll(Send, buffer, count);
         
         public int Receive(byte[] buffer, int offset = 0, int count = -1)
-            => Transfer(_socket.Receive, buffer, offset, count);
+            => Transfer(Socket.Receive, buffer, offset, count);
 
         public bool ReceiveAll(byte[] buffer, int count = -1)
             => TransferAll(Receive, buffer, count);
@@ -60,6 +75,8 @@ namespace NetworkingLibrary.Client
 
             SocketError error;
             var transfered = func(buffer, offset, count, SocketFlags.None, out error);
+            if (transfered == 0)
+                return 0;
 
             // TODO: Add error handling
             if (error != SocketError.Success)

@@ -22,9 +22,9 @@ namespace NetworkingLibrary.Client
         {
             try
             {
-                _socket.BeginConnect(endPoint, (result) =>
+                Socket.BeginConnect(endPoint, (result) =>
                 {
-                    _socket.EndConnect(result);
+                    Socket.EndConnect(result);
                     ClientConnected?.Invoke(this, new ClientEventArgs(this));
                 }, null);
             }
@@ -36,22 +36,22 @@ namespace NetworkingLibrary.Client
 
         public void BeginSend(byte[] buffer, int offset = 0, int count = -1)
         {
-            BeginTransfer(_socket.BeginSend, _socket.EndSend, buffer, offset, count, SendCompleted);
+            BeginTransfer(Socket.BeginSend, Socket.EndSend, buffer, offset, count, SendCompleted);
         }
 
         public void BeginSendAll(byte[] buffer, int count = -1)
         {
-            BeginTransferAll(_socket.BeginSend, _socket.EndSend, buffer, count, SendCompleted);
+            BeginTransferAll(Socket.BeginSend, Socket.EndSend, buffer, count, SendCompleted);
         }
 
         public void BeginReceive(byte[] buffer, int offset = 0, int count = -1)
         {
-            BeginTransfer(_socket.BeginReceive, _socket.EndReceive, buffer, offset, count, ReceiveCompleted);
+            BeginTransfer(Socket.BeginReceive, Socket.EndReceive, buffer, offset, count, ReceiveCompleted);
         }
 
         public void BeginReceiveAll(byte[] buffer, int count = -1)
         {
-            BeginTransferAll(_socket.BeginReceive, _socket.EndReceive, buffer, count, ReceiveCompleted);
+            BeginTransferAll(Socket.BeginReceive, Socket.EndReceive, buffer, count, ReceiveCompleted);
         }
 
         private void BeginTransfer(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int offset, int count, EventHandler<TransferEventArgs> completedHandler)

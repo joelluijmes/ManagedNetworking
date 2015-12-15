@@ -26,7 +26,7 @@ namespace NetworkingLibrary.Client
 			socketArgs.Completed += completedEventHandler;
 			socketArgs.RemoteEndPoint = endPoint;
 
-			if (_socket.ConnectAsync(socketArgs))           // running async
+			if (Socket.ConnectAsync(socketArgs))           // running async
 				await tcs.Task;                             // so wait for completion
 
 			socketArgs.Completed -= completedEventHandler;
@@ -38,13 +38,13 @@ namespace NetworkingLibrary.Client
 		}
 
 		public Task<int> SendAsync(byte[] buffer, int offset = 0, int count = -1)
-			=> TransferAsync(_socket.SendAsync, buffer, offset, count);
+			=> TransferAsync(Socket.SendAsync, buffer, offset, count);
 
 		public Task<bool> SendAllAsync(byte[] buffer, int count = -1)
 			=> TransferAllAsync(SendAsync, buffer, count);
 
 		public Task<int> ReceiveAsync(byte[] buffer, int offset = 0, int count = -1)
-			=> TransferAsync(_socket.ReceiveAsync, buffer, offset, count);
+			=> TransferAsync(Socket.ReceiveAsync, buffer, offset, count);
 
 		public Task<bool> ReceiveAllAsync(byte[] buffer, int count = -1)
 			=> TransferAllAsync(ReceiveAsync, buffer, count);
