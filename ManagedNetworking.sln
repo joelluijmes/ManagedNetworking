@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{77FCC85E-CDFC-4A55-AC85-4A2C708F0126}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkingLibrary.Socks", "NetworkingLibrary.Socks\NetworkingLibrary.Socks.csproj", "{3630469F-250C-46B3-88B4-EB39FFE56330}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{77FCC85E-CDFC-4A55-AC85-4A2C708F0126}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77FCC85E-CDFC-4A55-AC85-4A2C708F0126}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77FCC85E-CDFC-4A55-AC85-4A2C708F0126}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3630469F-250C-46B3-88B4-EB39FFE56330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3630469F-250C-46B3-88B4-EB39FFE56330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3630469F-250C-46B3-88B4-EB39FFE56330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3630469F-250C-46B3-88B4-EB39FFE56330}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -82,22 +82,8 @@ namespace NetworkingLibrary.Client
         {
             SocketError error;
             var transfered = func(buffer, offset, count, SocketFlags.None, out error);
-
-            // TODO: Add error handling
-
-            switch (error)
-            {
-                case SocketError.Success:
-                    break;
-
-                //case SocketError.ConnectionReset:   // disconnected :(
-                //    Disconnected = true;
-                //    break;
-
-                default:
-                    throw new InvalidOperationException("Unhandled socket error!", new SocketException((int)error));
-            }
-
+            
+            ErrorHandling(error);
             return transfered;
         }
 
@@ -108,13 +94,31 @@ namespace NetworkingLibrary.Client
             {
                 var current = func(buffer, transfered, count - transfered);
                 if (current == 0)
-                    // TODO: Error or..?
+                    // Inform about this error or..?
                     return false;
 
                 transfered += current;
             }
 
             return true;
+        }
+
+        private void ErrorHandling(SocketError socketError)
+        {
+            switch (socketError)
+            {
+                case SocketError.Success:
+                    break;
+
+                case SocketError.ConnectionReset:
+                    if (EventOnDisconnect)
+                        CliendDisconnected?.Invoke(this, new ClientEventArgs(this));
+
+                    break;
+
+                default:
+                    throw new Exception($"Unhandled socket exception: {socketError}", new SocketException((int) socketError));
+            }
         }
     }
 }

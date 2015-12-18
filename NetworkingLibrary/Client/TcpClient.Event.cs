@@ -17,7 +17,7 @@ namespace NetworkingLibrary.Client
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
 
         private delegate IAsyncResult BeginSocketTransferFunc(byte[] buffer, int offset, int count, SocketFlags socketFlags, AsyncCallback callback, object state);
-        private delegate int EndSocketTransferFunc(IAsyncResult result);
+        private delegate int EndSocketTransferFunc(IAsyncResult result, out SocketError socketError);
         
         public void BeginConnect(EndPoint endPoint)
         {
@@ -65,9 +65,10 @@ namespace NetworkingLibrary.Client
 
             beginFunc(buffer, offset, count, SocketFlags.None, result =>
             {
-                var transfered = endFunc(result);
-                // TODO: Error handling
-
+                SocketError error;
+                var transfered = endFunc(result, out error);
+                
+                ErrorHandling(error);
                 completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
             }, null);
         }
@@ -79,15 +80,22 @@ namespace NetworkingLibrary.Client
 
             callback = result =>
             {
-                var current = endFunc(result);
-                transfered += current;
+                SocketError error;
+                var current = endFunc(result, out error);
+                ErrorHandling(error);
 
+                if (current == 0)
+                {
+                    completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
+                    return;
+                }
+
+                transfered += current;
                 if (transfered < count)
                     beginFunc(buffer, transfered, count - transfered, SocketFlags.None, callback, null);
                 else
                     completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, count));
 
-                // TODO: Error handling
                 completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
             };
 

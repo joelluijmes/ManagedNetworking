@@ -61,7 +61,7 @@ namespace NetworkingLibrary.Client
             return TransferAllAsync(ReceiveAsync, buffer, count);
 	    }
 
-	    private static async Task<int> TransferAsync(SocketTransferAsyncFunc func, byte[] buffer, int offset, int count)
+	    private async Task<int> TransferAsync(SocketTransferAsyncFunc func, byte[] buffer, int offset, int count)
 		{
             var tcs = new TaskCompletionSource<bool>();     // use TaskCompletionSource for when the method is running async
 			EventHandler<SocketAsyncEventArgs> completedEventHandler = (sender, e) =>
@@ -76,13 +76,12 @@ namespace NetworkingLibrary.Client
 			if (func(socketArgs))                           // running async
 				await tcs.Task;                             // so wait for completion
 
-			socketArgs.Completed -= completedEventHandler;
+            ErrorHandling(socketArgs.SocketError);
 
-			// TODO: More error handling
-			var success = socketArgs.SocketError == SocketError.Success;
+            socketArgs.Completed -= completedEventHandler;
 			_pool.Put(socketArgs);
 
-			return success ? socketArgs.BytesTransferred : 0;
+			return socketArgs.BytesTransferred;
 		}
 
 		private static async Task<bool> TransferAllAsync(TransferAsyncFunc func, byte[] buffer, int count)
