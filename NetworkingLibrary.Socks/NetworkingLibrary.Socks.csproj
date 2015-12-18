@@ -40,14 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Packets\Socks5ConnectionResponse.cs" />
-    <Compile Include="Packets\Socks5GreetingRequest.cs" />
-    <Compile Include="Packets\Socks5GreetingResponse.cs" />
-    <Compile Include="SocksAuthentication.cs" />
+    <Compile Include="SOCKS5\Socks5Client.cs" />
+    <Compile Include="SOCKS5\SocksAddressType.cs" />
+    <Compile Include="SOCKS5\Packets\Socks5ConnectionBase.cs" />
+    <Compile Include="SOCKS5\Packets\Socks5ConnectionResponse.cs" />
+    <Compile Include="SOCKS5\Packets\Socks5GreetingRequest.cs" />
+    <Compile Include="SOCKS5\Packets\Socks5GreetingResponse.cs" />
+    <Compile Include="SOCKS5\SocksAuthentication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Packets\Socks5ConnectionRequest.cs" />
-    <Compile Include="SocksCommand.cs" />
-    <Compile Include="SocksResponseStatus.cs" />
+    <Compile Include="SOCKS5\Packets\Socks5ConnectionRequest.cs" />
+    <Compile Include="SOCKS5\SocksCommand.cs" />
+    <Compile Include="SOCKS5\SocksResponseStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetworkingLibrary\NetworkingLibrary.csproj">

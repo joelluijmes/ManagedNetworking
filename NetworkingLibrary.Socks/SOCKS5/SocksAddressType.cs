@@ -1,4 +1,4 @@
-namespace NetworkingLibrary.Socks
+namespace NetworkingLibrary.Socks.SOCKS5
 {
     internal enum SocksAddressType
     {

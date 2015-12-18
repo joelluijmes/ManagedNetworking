@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NetworkingLibrary.Socks
+﻿namespace NetworkingLibrary.Socks.SOCKS5
 {
     internal enum SocksResponseStatus
     {

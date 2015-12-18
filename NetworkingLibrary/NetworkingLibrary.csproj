@@ -50,6 +50,7 @@
     <Compile Include="Client\TcpClient.Event.cs" />
     <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="Events\TransferEventArgs.cs" />
+    <Compile Include="ISerializable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\IAsyncServer.cs" />
     <Compile Include="Server\IEventServer.cs" />
