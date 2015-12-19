@@ -7,6 +7,10 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
     {
         public SocksResponseStatus Status { get; private set; }
 
+        public Socks5ConnectionResponse()
+        {
+        }
+
         public Socks5ConnectionResponse(SocksResponseStatus status, IPAddress destination, int port) : base(destination, port)
         {
             Status = status;

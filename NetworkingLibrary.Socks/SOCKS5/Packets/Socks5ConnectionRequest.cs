@@ -7,6 +7,10 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
     {
         public SocksCommand Command { get; private set; }
 
+        public Socks5ConnectionRequest()
+        {
+        }
+
         public Socks5ConnectionRequest(SocksCommand command, IPAddress destination, int port) : base(destination, port)
         {
             Command = command;

@@ -1,6 +1,6 @@
 ﻿namespace NetworkingLibrary.Socks.SOCKS5
 {
-    internal enum SocksResponseStatus
+    public enum SocksResponseStatus
     {
         OK = 0x00,
         GeneralFailure = 0x01,

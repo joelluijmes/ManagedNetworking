@@ -1,6 +1,6 @@
 namespace NetworkingLibrary.Socks.SOCKS5
 {
-    internal enum SocksAddressType
+    public enum SocksAddressType
     {
         IPv4 = 0x01,
         Domain = 0x03,

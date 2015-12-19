@@ -18,7 +18,11 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public int HeaderLength { get; private set; } = 0x04;
 
         public int BodyLength { get; private set; }
-        
+
+        protected Socks5ConnectionBase()
+        {
+        }
+
         protected Socks5ConnectionBase(IPAddress destination, int port)
         {
             AddressType = destination.AddressFamily == AddressFamily.InterNetwork
