@@ -4,12 +4,12 @@ using TcpClient = NetworkingLibrary.Client.TcpClient;
 
 namespace NetworkingLibrary.Server
 {
-    public partial class Server : IServer
+    public partial class TcpServer : IServer
     {
         private const int BACKLOG = 200;
         private Socket _socket;
 
-        public Server()
+        public TcpServer()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
