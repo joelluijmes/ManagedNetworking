@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace NetworkingLibrary.Socks.SOCKS5.Packets
 {
@@ -16,18 +17,18 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
             Status = status;
         }
 
-        public override byte[] Serialize()
+        public override byte[] SerializeHeader()
         {
-            var buffer = base.Serialize();
+            var buffer = base.SerializeHeader();
             buffer[1] = (byte)Status;
 
             return buffer;
         }
 
-        public override void Deserialize(byte[] serialized)
+        public override void DeserializeHeader(IList<byte> serialized)
         {
             Status = (SocksResponseStatus) serialized[1];
-            base.Deserialize(serialized);
+            base.DeserializeHeader(serialized);
         }
     }
 }

@@ -15,6 +15,10 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public byte[] DestinationAddress { get; private set; }
         public short DestinationPort { get; private set; }
 
+        public int HeaderLength { get; private set; } = 0x04;
+
+        public int BodyLength { get; private set; }
+        
         protected Socks5ConnectionBase(IPAddress destination, int port)
         {
             AddressType = destination.AddressFamily == AddressFamily.InterNetwork
@@ -34,54 +38,53 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
             DestinationPort = checked((short) port);
         }
 
-        public virtual byte[] Serialize()
+        public virtual byte[] SerializeHeader()
             => new byte[]
             {
                 Version,
                 0x00,
                 Reserved,
                 (byte) AddressType
-            }
-            .Concat(DestinationAddress)
-            .Concat(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(DestinationPort)))
-            .ToArray();
+            };
 
-        public virtual void Deserialize(byte[] serialized)
+        public byte[] SerializeBody()
+            => DestinationAddress
+                .Concat(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(DestinationPort)))
+                .ToArray();
+
+        public virtual void DeserializeHeader(IList<byte> serialized)
         {
             if (Version != serialized[0])
                 throw new ArgumentException("Data is invalid, Version does not match", nameof(serialized));
             if (Reserved != serialized[2])
                 throw new ArgumentException("Data is invalid, Reserved does not match", nameof(serialized));
 
-            AddressType = (SocksAddressType) serialized[3];
-
-            int portOffset;
+            AddressType = (SocksAddressType)serialized[3];
+            BodyLength = 2;                             // the port
             switch (AddressType)
             {
                 case SocksAddressType.Domain:
-                {
-                    var len = serialized[4];
-                    DestinationAddress = serialized.Skip(5).Take(len).ToArray();
-                    portOffset = len  + 5;
-
+                    HeaderLength = 0x05;
+                    BodyLength += serialized[4];
                     break;
-                }
                 case SocksAddressType.IPv4:
-                    DestinationAddress = serialized.Skip(4).Take(4).ToArray();
-                    portOffset = 8;
-
+                    BodyLength += 0x04;
                     break;
                 case SocksAddressType.IPv6:
-                    DestinationAddress = serialized.Skip(4).Take(16).ToArray();
-                    portOffset = 20;
-
+                    BodyLength += 0x10;
                     break;
 
                 default:
                     throw new ArgumentException("Data is invalid, AddressType is invalid", nameof(serialized));
             }
+        }
 
-            var hostPort = BitConverter.ToInt16(serialized, portOffset);
+        public void DeserializeBody(IList<byte> serialized)
+        {
+            DestinationAddress = serialized.Take(BodyLength - 2).ToArray();
+
+            var portBuf = new[] {serialized[BodyLength - 2], serialized[BodyLength - 1]};
+            var hostPort = BitConverter.ToInt16(portBuf, 0);
             DestinationPort = IPAddress.NetworkToHostOrder(hostPort);
         }
     }
