@@ -12,7 +12,7 @@ namespace NetworkingLibrary.Client
     public sealed partial class TcpClient : IEventTcpClient
     {
         public event EventHandler<ClientEventArgs> ClientConnected;
-        public event EventHandler<ClientEventArgs> CliendDisconnected; 
+        public event EventHandler<ClientEventArgs> ClientDisconnected; 
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
 

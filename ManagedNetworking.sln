@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkingLibrary.Socks", "NetworkingLibrary.Socks\NetworkingLibrary.Socks.csproj", "{3630469F-250C-46B3-88B4-EB39FFE56330}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSocksServer", "TestSocksServer\TestSocksServer.csproj", "{26306F36-70BF-4CE7-893C-F8BE61F1C086}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSocksClient", "TestSocksClient\TestSocksClient.csproj", "{88AA88C6-8AC5-4E6B-A07F-286EBBB0A6CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,14 @@ Global
 		{3630469F-250C-46B3-88B4-EB39FFE56330}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3630469F-250C-46B3-88B4-EB39FFE56330}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3630469F-250C-46B3-88B4-EB39FFE56330}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26306F36-70BF-4CE7-893C-F8BE61F1C086}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26306F36-70BF-4CE7-893C-F8BE61F1C086}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26306F36-70BF-4CE7-893C-F8BE61F1C086}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26306F36-70BF-4CE7-893C-F8BE61F1C086}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88AA88C6-8AC5-4E6B-A07F-286EBBB0A6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88AA88C6-8AC5-4E6B-A07F-286EBBB0A6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88AA88C6-8AC5-4E6B-A07F-286EBBB0A6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88AA88C6-8AC5-4E6B-A07F-286EBBB0A6CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{55EA70B5-1851-4B40-A939-5D29003374BD} = {17F98DC9-B797-4D18-8F88-81DBDAE1C5BA}
 		{77FCC85E-CDFC-4A55-AC85-4A2C708F0126} = {17F98DC9-B797-4D18-8F88-81DBDAE1C5BA}
+		{26306F36-70BF-4CE7-893C-F8BE61F1C086} = {17F98DC9-B797-4D18-8F88-81DBDAE1C5BA}
+		{88AA88C6-8AC5-4E6B-A07F-286EBBB0A6CA} = {17F98DC9-B797-4D18-8F88-81DBDAE1C5BA}
 	EndGlobalSection
 EndGlobal

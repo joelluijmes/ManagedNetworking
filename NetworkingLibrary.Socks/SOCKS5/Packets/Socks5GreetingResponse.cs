@@ -11,6 +11,10 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public int HeaderLength => 0x02;
         public int BodyLength => 0x00;
 
+        public Socks5GreetingResponse()
+        {
+        }
+
         public Socks5GreetingResponse(SocksAuthentication authentication)
         {
             AuthenticationMethod = authentication;

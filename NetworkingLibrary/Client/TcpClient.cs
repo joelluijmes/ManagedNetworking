@@ -112,7 +112,7 @@ namespace NetworkingLibrary.Client
 
                 case SocketError.ConnectionReset:
                     if (EventOnDisconnect)
-                        CliendDisconnected?.Invoke(this, new ClientEventArgs(this));
+                        ClientDisconnected?.Invoke(this, new ClientEventArgs(this));
 
                     break;
 

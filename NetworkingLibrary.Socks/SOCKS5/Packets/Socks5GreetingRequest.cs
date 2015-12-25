@@ -14,6 +14,10 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public int HeaderLength => 0x02;
         public int BodyLength { get; private set; }
 
+        public Socks5GreetingRequest()
+        {
+        }
+
         public Socks5GreetingRequest(IList<SocksAuthentication> authentications)
         {
             Authentications = new ReadOnlyCollection<SocksAuthentication>(authentications);

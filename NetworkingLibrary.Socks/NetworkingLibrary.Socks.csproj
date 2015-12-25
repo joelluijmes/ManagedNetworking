@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="SOCKS5\Socks5Client.cs" />
     <Compile Include="SOCKS5\Socks5Server.cs" />
     <Compile Include="SOCKS5\SocksAddressType.cs" />
