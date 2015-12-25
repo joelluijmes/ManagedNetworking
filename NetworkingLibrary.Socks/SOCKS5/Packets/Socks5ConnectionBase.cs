@@ -11,9 +11,9 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
     {
         public byte Version => 0x05;
         public byte Reserved => 0x00;
-        public SocksAddressType AddressType { get; private set; }
-        public byte[] DestinationAddress { get; private set; }
-        public short DestinationPort { get; private set; }
+        public SocksAddressType AddressType { get; protected set; }
+        public byte[] DestinationAddress { get; protected set; }
+        public short DestinationPort { get; protected set; }
 
         public int HeaderLength { get; private set; } = 0x04;
 

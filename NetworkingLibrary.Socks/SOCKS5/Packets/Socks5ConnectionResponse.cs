@@ -11,6 +11,14 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         {
         }
 
+        public Socks5ConnectionResponse(SocksResponseStatus status, Socks5ConnectionBase request)
+        {
+            Status = status;
+            AddressType = request.AddressType;
+            DestinationAddress = request.DestinationAddress;
+            DestinationPort = request.DestinationPort;
+        }
+
         public Socks5ConnectionResponse(SocksResponseStatus status, IPAddress destination, int port) : base(destination, port)
         {
             Status = status;
