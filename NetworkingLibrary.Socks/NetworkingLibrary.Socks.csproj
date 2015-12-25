@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SOCKS5\Socks5Client.cs" />
+    <Compile Include="SOCKS5\Socks5Server.cs" />
     <Compile Include="SOCKS5\SocksAddressType.cs" />
     <Compile Include="SOCKS5\Packets\Socks5ConnectionBase.cs" />
     <Compile Include="SOCKS5\Packets\Socks5ConnectionResponse.cs" />

@@ -55,15 +55,15 @@
     <Compile Include="Server\IAsyncServer.cs" />
     <Compile Include="Server\IEventServer.cs" />
     <Compile Include="Server\IServer.cs" />
-    <Compile Include="Server\Server.Async.cs" />
-    <Compile Include="Server\Server.cs" />
+    <Compile Include="Server\TcpServer.Async.cs" />
+    <Compile Include="Server\TcpServer.cs" />
     <Compile Include="Util\Pool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\TcpClient.Async.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Server\Server.Event.cs" />
+    <Compile Include="Server\TcpServer.Event.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

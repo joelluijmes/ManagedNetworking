@@ -5,9 +5,9 @@ namespace NetworkingLibrary.Events
 {
     public class ClientEventArgs : EventArgs
     {
-        public ITcpClient Client { get; }
+        public TcpClient Client { get; }
 
-        public ClientEventArgs(ITcpClient client)
+        public ClientEventArgs(TcpClient client)
         {
             Client = client;
         }

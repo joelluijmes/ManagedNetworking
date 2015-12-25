@@ -4,7 +4,7 @@ using NetworkingLibrary.Events;
 
 namespace NetworkingLibrary.Server
 {
-    public partial class Server : IEventServer
+    public partial class TcpServer : IEventServer
     {
         public event EventHandler<ClientEventArgs> ClientConnected;
 

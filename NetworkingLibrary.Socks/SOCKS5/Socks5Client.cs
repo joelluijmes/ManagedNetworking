@@ -9,13 +9,18 @@ using NetworkingLibrary.Socks.SOCKS5.Packets;
 
 namespace NetworkingLibrary.Socks.SOCKS5
 {
-    public class Socks5Client
+    public sealed class Socks5Client
     {
         private readonly TcpClient _client;
 
-        public Socks5Client()
+2        public Socks5Client()
         {
             _client = new TcpClient();
+        }
+
+        internal Socks5Client(TcpClient client)
+        {
+            _client = client;
         }
 
         public Task<bool> ConnectWithServer(EndPoint serverEndPoint)

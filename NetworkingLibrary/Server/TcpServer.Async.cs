@@ -6,7 +6,7 @@ using TcpClient = NetworkingLibrary.Client.TcpClient;
 
 namespace NetworkingLibrary.Server
 {
-    public partial class Server : IAsyncServer
+    public partial class TcpServer : IAsyncServer
     {
         private readonly Pool<SocketAsyncEventArgs> _pool = new Pool<SocketAsyncEventArgs>();
 
