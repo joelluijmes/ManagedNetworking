@@ -12,7 +12,10 @@ namespace NetworkingLibrary.Socks.SOCKS5
 {
     public sealed class Socks5Client
     {
+        private const int RECV_BUFSIZE = 1024;
+
         internal TcpClient InternalClient { get; }
+        private TcpClient _endPointClient;
         
         public Socks5Client()
         {
@@ -31,6 +34,12 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 return false;
 
             return await InitiateGreeting();
+        }
+
+        internal Task<bool> ConnectWithEndPoint(EndPoint endPoint)
+        {
+            _endPointClient = new TcpClient();
+            return _endPointClient.ConnectAsync(endPoint);
         }
 
         private async Task<bool> InitiateGreeting()
@@ -53,6 +62,39 @@ namespace NetworkingLibrary.Socks.SOCKS5
 
             var connectionResponse = await InternalClient.ReceiveSerializable<Socks5ConnectionResponse>();
             return connectionResponse.Status;
+        }
+
+        public void StartTunneling()
+        {
+            _endPointClient.ReceiveCompleted += OnRemoteReceived;
+            _endPointClient.SendCompleted += (sender, args) =>
+                Console.WriteLine($"[TO REMOTE] Sent {args.Count}");
+            InternalClient.ReceiveCompleted += OnProxiedReceived;
+            InternalClient.SendCompleted += (sender, args) =>
+                Console.WriteLine($"[TO PROXIE] Sent {args.Count}");
+
+            _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
+            InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
+        }
+
+        private void OnRemoteReceived(object sender, TransferEventArgs e)
+        {
+            // TODO: Disconnect??
+            if (e.Count == 0) // disconnected
+                return;
+
+            _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
+            InternalClient.BeginSendAll(e.Bytes, e.Count);
+        }
+
+        private void OnProxiedReceived(object sender, TransferEventArgs e)
+        {
+            // TODO: Disconnect??
+            if (e.Count == 0) // disconnected
+                return;
+
+            InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
+            _endPointClient.BeginSendAll(e.Bytes, e.Count);
         }
     }
 }

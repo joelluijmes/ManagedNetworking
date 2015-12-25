@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using NetworkingLibrary.Client;
@@ -46,6 +47,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 InvalidClientConnected?.Invoke(this, new TcpClientEventArgs(e.Client));
 
             await HandleConnectionInitiate(client);
+            client.StartTunneling();
 
             _clients.Add(client);
         }
@@ -53,10 +55,14 @@ namespace NetworkingLibrary.Socks.SOCKS5
         private static async Task<bool> HandleConnectionInitiate(Socks5Client client)
         {
             var connectionRequest = await client.InternalClient.ReceiveSerializable<Socks5ConnectionRequest>();
-            if (connectionRequest == default(Socks5ConnectionRequest))
+            if (connectionRequest == null)
                 return false;
 
-            var connectionResponse = new Socks5ConnectionResponse(SocksResponseStatus.NotAllowed, connectionRequest);
+            // TODO: Add validation etc.
+            var success = await client.ConnectWithEndPoint(connectionRequest.EndPoint);
+            var status = success ? SocksResponseStatus.OK : SocksResponseStatus.GeneralFailure;
+
+            var connectionResponse = new Socks5ConnectionResponse(status, connectionRequest);
             return await client.InternalClient.SendSerializable(connectionResponse);
         }
 
@@ -64,7 +70,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
         {
             // TODO: Add state or something?
             var greetingRequest = await client.InternalClient.ReceiveSerializable<Socks5GreetingRequest>();
-            if (greetingRequest == default(Socks5GreetingRequest))
+            if (greetingRequest == null)
                 return false;
 
             // TODO: Authentication handling

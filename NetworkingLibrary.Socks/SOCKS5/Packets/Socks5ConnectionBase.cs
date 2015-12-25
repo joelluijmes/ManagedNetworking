@@ -16,8 +16,28 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public short DestinationPort { get; protected set; }
 
         public int HeaderLength { get; private set; } = 0x04;
-
         public int BodyLength { get; private set; }
+
+        public IPEndPoint EndPoint
+        {
+            get
+            {
+                IPAddress address;
+                if (AddressType == SocksAddressType.Domain)
+                {
+                    var domain = Encoding.UTF8.GetString(DestinationAddress);
+                    address = Dns.GetHostAddresses(domain).FirstOrDefault();
+                    if (address == null)
+                        throw new InvalidOperationException($"Couldn't resolve domain: {domain}");  // TODO: Exception
+                }
+                else
+                {
+                    address = new IPAddress(DestinationAddress);
+                }
+
+                return new IPEndPoint(address, DestinationPort);
+            }
+        }
 
         protected Socks5ConnectionBase()
         {
