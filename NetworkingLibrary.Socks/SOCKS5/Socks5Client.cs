@@ -13,7 +13,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
     {
         private readonly TcpClient _client;
 
-2        public Socks5Client()
+        public Socks5Client()
         {
             _client = new TcpClient();
         }
