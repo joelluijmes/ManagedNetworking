@@ -16,7 +16,7 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public short DestinationPort { get; protected set; }
 
         public int HeaderLength { get; private set; } = 0x04;
-        public int BodyLength { get; private set; }
+        public int BodyLength { get; protected set; }
 
         public IPEndPoint EndPoint
         {
@@ -45,18 +45,33 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
 
         protected Socks5ConnectionBase(IPAddress destination, int port)
         {
-            AddressType = destination.AddressFamily == AddressFamily.InterNetwork
-                ? SocksAddressType.IPv4
-                : SocksAddressType.IPv6;
+            BodyLength = 0x02;
+            switch (destination.AddressFamily)
+            {
+                case AddressFamily.InterNetwork:
+                    AddressType = SocksAddressType.IPv4;
+                    BodyLength += 0x04;
+                    break;
+                case AddressFamily.InterNetworkV6:
+                    AddressType = SocksAddressType.IPv6;
+                    BodyLength += 0x10;
+                    break;
+                default:
+                    throw new ArgumentException("AddressFamily is not InterNetwork (IPv4) or InterNetworkV6 (IPv6)", nameof(destination));
+            }
+
             DestinationAddress = destination.GetAddressBytes();
             DestinationPort = checked((short) port);
+           
         }
 
         protected Socks5ConnectionBase(string domain, int port = 80)
         {
             AddressType = SocksAddressType.Domain;
+            BodyLength = 0x02 + domain.Length;
             DestinationAddress = new byte[domain.Length + 1];
             DestinationAddress[0] = (byte)domain.Length;
+
             var buf = Encoding.UTF8.GetBytes(domain);
             Buffer.BlockCopy(buf, 0, DestinationAddress, 1, buf.Length);
             DestinationPort = checked((short) port);

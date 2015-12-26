@@ -17,6 +17,7 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
             AddressType = request.AddressType;
             DestinationAddress = request.DestinationAddress;
             DestinationPort = request.DestinationPort;
+            BodyLength = DestinationAddress.Length + 2;
         }
 
         public Socks5ConnectionResponse(SocksResponseStatus status, IPAddress destination, int port) : base(destination, port)

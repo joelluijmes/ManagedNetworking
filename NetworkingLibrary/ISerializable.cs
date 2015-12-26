@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using NetworkingLibrary.Client;
@@ -23,8 +24,11 @@ namespace NetworkingLibrary
         {
             // TODO: Error Handling??
             var buf1 = serializable.SerializeHeader();
-            if (serializable.BodyLength == 0)           // no body
+            if (serializable.BodyLength == 0) // no body
+            {
+                Debug.WriteLine($"[WARN] BodyLength is 0 with HeaderLength is {serializable.HeaderLength} ({serializable.GetType().Name})");
                 return buf1;
+            }
 
             var buf2 = serializable.SerializeBody();
             

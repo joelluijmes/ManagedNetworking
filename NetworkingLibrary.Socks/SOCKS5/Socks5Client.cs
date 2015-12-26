@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,36 +8,87 @@ using NetworkingLibrary.Socks.SOCKS5.Packets;
 
 namespace NetworkingLibrary.Socks.SOCKS5
 {
-    public sealed class Socks5Client
+    public sealed partial class Socks5Client 
     {
         private const int RECV_BUFSIZE = 1024;
+        private readonly TaskCompletionSource<bool> _connectedCompletion;
 
         internal TcpClient InternalClient { get; }
         private TcpClient _endPointClient;
-        
-        public Socks5Client()
+
+        public bool ConnectedWithSocksServer => _connectedCompletion?.Task.IsCompleted == true && _connectedCompletion.Task.Result;
+
+        public Socks5Client(EndPoint socksServer)
         {
             InternalClient = new TcpClient();
+            _connectedCompletion = new TaskCompletionSource<bool>();
+
+            Task.Run(async () =>
+            {
+                var result = await ConnectWithSocksServer(socksServer);
+                _connectedCompletion.SetResult(result);
+            });
         }
 
         internal Socks5Client(TcpClient client)
         {
             InternalClient = client;
+
+            _connectedCompletion = new TaskCompletionSource<bool>();
+            _connectedCompletion.SetResult(true);
         }
 
-        public async Task<bool> ConnectWithServer(EndPoint serverEndPoint)
+        public async Task<SocksResponseStatus> InitiateConnection(string domain, int port = 80)
         {
-            var connected = await InternalClient.ConnectAsync(serverEndPoint);
-            if (!connected)
-                return false;
+            if (string.IsNullOrWhiteSpace(domain))
+                throw new ArgumentException("Domain cannot be null or whitespace.", nameof(domain));
+            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
+                throw new ArgumentOutOfRangeException(nameof(port), "Port number is invalid");
 
-            return await InitiateGreeting();
+            if (!await _connectedCompletion.Task)
+                return SocksResponseStatus.GeneralFailure;
+
+            var request = new Socks5ConnectionRequest(SocksCommand.Connect, domain, port);
+            var result = await InternalClient.SendSerializable(request);
+            if (!result)        // TODO: Error HANDLING
+                throw new InvalidOperationException("Something went wrong when sending serialization");
+
+            var connectionResponse = await InternalClient.ReceiveSerializable<Socks5ConnectionResponse>();
+            return connectionResponse.Status;
         }
 
-        internal Task<bool> ConnectWithEndPoint(EndPoint endPoint)
+        public async Task<SocksResponseStatus> InitiateConnection(IPAddress address, int port)
+        {
+            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
+                throw new ArgumentOutOfRangeException(nameof(port), "Port number is invalid");
+
+            if (!await _connectedCompletion.Task)
+                return SocksResponseStatus.GeneralFailure;
+
+            var request = new Socks5ConnectionRequest(SocksCommand.Connect, address, port);
+            var result = await InternalClient.SendSerializable(request);
+            if (!result)        // TODO: Error HANDLING
+                throw new InvalidOperationException("Something went wrong when sending serialization");
+
+            var connectionResponse = await InternalClient.ReceiveSerializable<Socks5ConnectionResponse>();
+            return connectionResponse.Status;
+        }
+
+        public Task<SocksResponseStatus> InitiateConnection(IPEndPoint endPoint)
+            => InitiateConnection(endPoint.Address, endPoint.Port);
+
+        internal Task<bool> ConnectWith(EndPoint endPoint)
         {
             _endPointClient = new TcpClient();
             return _endPointClient.ConnectAsync(endPoint);
+        }
+
+        private async Task<bool> ConnectWithSocksServer(EndPoint endPoint)
+        {
+            if (!await InternalClient.ConnectAsync(endPoint))
+                return false;
+
+            return await InitiateGreeting();
         }
 
         private async Task<bool> InitiateGreeting()
@@ -52,30 +101,15 @@ namespace NetworkingLibrary.Socks.SOCKS5
             var greetingResponse = await InternalClient.ReceiveSerializable<Socks5GreetingResponse>();
             return greetingResponse.AuthenticationMethod == SocksAuthentication.NoAuthentication;
         }
-
-        public async Task<SocksResponseStatus> InitiateConnection(string domain, int port = 80)
-        {
-            var request = new Socks5ConnectionRequest(SocksCommand.Connect, domain, port);
-            var result = await InternalClient.SendSerializable(request);
-            if (!result)        // TODO: Error HANDLING
-                throw new InvalidOperationException("Something went wrong when sending serialization");
-
-            var connectionResponse = await InternalClient.ReceiveSerializable<Socks5ConnectionResponse>();
-            return connectionResponse.Status;
-        }
-
+        
         public void StartTunneling()
         {
             _endPointClient.ReceiveCompleted += OnRemoteReceived;
-            _endPointClient.SendCompleted += (sender, args) =>
-                Console.WriteLine($"[TO REMOTE] Sent {args.Count}");
             InternalClient.ReceiveCompleted += OnProxiedReceived;
-            InternalClient.SendCompleted += (sender, args) =>
-                Console.WriteLine($"[TO PROXIE] Sent {args.Count}");
 
             _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
             InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
-        }
+        }   
 
         private void OnRemoteReceived(object sender, TransferEventArgs e)
         {
@@ -84,6 +118,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 return;
 
             _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
+            Console.WriteLine($"[REMOTE] {e.Count}: {Encoding.UTF8.GetString(e.Bytes, 0, 20)}");
             InternalClient.BeginSendAll(e.Bytes, e.Count);
         }
 
@@ -94,6 +129,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 return;
 
             InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
+            Console.WriteLine($"[PROXY ] {e.Count}: {Encoding.UTF8.GetString(e.Bytes, 0, 20)}");
             _endPointClient.BeginSendAll(e.Bytes, e.Count);
         }
     }

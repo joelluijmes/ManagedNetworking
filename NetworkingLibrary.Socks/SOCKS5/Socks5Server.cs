@@ -59,9 +59,9 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 return false;
 
             // TODO: Add validation etc.
-            var success = await client.ConnectWithEndPoint(connectionRequest.EndPoint);
+            var success = await client.ConnectWith(connectionRequest.EndPoint);
             var status = success ? SocksResponseStatus.OK : SocksResponseStatus.GeneralFailure;
-
+            
             var connectionResponse = new Socks5ConnectionResponse(status, connectionRequest);
             return await client.InternalClient.SendSerializable(connectionResponse);
         }

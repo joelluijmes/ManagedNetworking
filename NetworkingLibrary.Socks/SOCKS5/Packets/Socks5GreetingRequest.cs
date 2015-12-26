@@ -21,6 +21,7 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public Socks5GreetingRequest(IList<SocksAuthentication> authentications)
         {
             Authentications = new ReadOnlyCollection<SocksAuthentication>(authentications);
+            BodyLength = authentications.Count;
         }
 
         public byte[] Serialize()
