@@ -102,7 +102,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
             return greetingResponse.AuthenticationMethod == SocksAuthentication.NoAuthentication;
         }
         
-        public void StartTunneling()
+        internal void StartTunneling()
         {
             _endPointClient.ReceiveCompleted += OnRemoteReceived;
             InternalClient.ReceiveCompleted += OnProxiedReceived;

@@ -78,6 +78,7 @@ namespace NetworkingLibrary.Client
 
             ErrorHandling(socketArgs.SocketError);
 
+            socketArgs.SetBuffer(null, 0, 0);
             socketArgs.Completed -= completedEventHandler;
 			_pool.Put(socketArgs);
 
