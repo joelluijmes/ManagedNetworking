@@ -15,6 +15,9 @@ namespace NetworkingLibrary.Socks.SOCKS5
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;
 
+        public EndPoint LocalEndPoint => InternalClient.LocalEndPoint;
+        public EndPoint RemoteEndPoint => InternalClient.RemoteEndPoint;
+
         public bool Connect(EndPoint endPoint)
         {	// TODO Replace InitiateConnection with these connects
             throw new NotImplementedException();

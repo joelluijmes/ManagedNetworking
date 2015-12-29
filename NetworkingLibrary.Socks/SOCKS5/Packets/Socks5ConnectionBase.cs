@@ -15,7 +15,7 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
         public byte[] DestinationAddress { get; protected set; }
         public short DestinationPort { get; protected set; }
 
-        public int HeaderLength { get; private set; } = 0x04;
+        public int HeaderLength { get; private set; } = 0x05;           // it's a lie for IPv4 and IPv6 :$
         public int BodyLength { get; protected set; }
 
         public IPEndPoint EndPoint
@@ -45,6 +45,7 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
 
         protected Socks5ConnectionBase(IPAddress destination, int port)
         {
+            HeaderLength = 0x04;
             BodyLength = 0x02;
             switch (destination.AddressFamily)
             {
@@ -62,7 +63,6 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
 
             DestinationAddress = destination.GetAddressBytes();
             DestinationPort = checked((short) port);
-           
         }
 
         protected Socks5ConnectionBase(string domain, int port = 80)
@@ -103,13 +103,14 @@ namespace NetworkingLibrary.Socks.SOCKS5.Packets
             switch (AddressType)
             {
                 case SocksAddressType.Domain:
-                    HeaderLength = 0x05;
                     BodyLength += serialized[4];
                     break;
                 case SocksAddressType.IPv4:
+                    HeaderLength = 0x04;
                     BodyLength += 0x04;
                     break;
                 case SocksAddressType.IPv6:
+                    HeaderLength = 0x04;
                     BodyLength += 0x10;
                     break;
 

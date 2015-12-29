@@ -21,6 +21,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
         public event EventHandler<SocksClientEventArgs> ClientConnected;
         public event EventHandler<SocksClientEventArgs> ClientDisconnected;
         public event EventHandler<TcpClientEventArgs> InvalidClientConnected;
+        
 
         public Socks5Server(int port)
         {

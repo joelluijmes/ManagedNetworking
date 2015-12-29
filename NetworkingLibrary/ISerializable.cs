@@ -40,7 +40,7 @@ namespace NetworkingLibrary
             // TODO: Error Handling??
             serializable.DeserializeHeader(serialized);
 
-            if (serializable.BodyLength == 0)           // no body
+            if (serializable.BodyLength == 0)                                   // no body
                 return;
 
             var segment = new ArraySegment<byte>(serialized, serializable.HeaderLength, serializable.BodyLength);
@@ -51,22 +51,56 @@ namespace NetworkingLibrary
         {
             var serializable = new T();
 
-            var bufHeader = new byte[serializable.HeaderLength];
+            var oldHeaderLength = serializable.HeaderLength;
+            var bufHeader = new byte[oldHeaderLength];
             if (!await client.ReceiveAllAsync(bufHeader))
                 return default(T);
             serializable.DeserializeHeader(bufHeader);
 
-            if (serializable.BodyLength == 0) // no body
+            if (serializable.BodyLength == 0)                                   // no body
                 return serializable;
 
-            var bufBody = new byte[serializable.BodyLength];
-            if (!await client.ReceiveAllAsync(bufBody))
-                return default(T);
+            var delta = oldHeaderLength - serializable.HeaderLength;
+            if (delta < 0)                                                      // Header shrinked -> contained body data
+                throw new InvalidOperationException("The header cannot grow because that would mean it wasn't fully deserialized yet.");
+
+            if (delta == 0)
+            {
+                var buffer = new byte[serializable.BodyLength];
+                if (!await client.ReceiveAllAsync(buffer, buffer.Length))
+                    return default(T);
+                serializable.DeserializeBody(buffer);
+
+                return serializable;
+            }
+
+            var bufBody = new byte[serializable.BodyLength + delta];
+            Buffer.BlockCopy(bufHeader, serializable.HeaderLength, bufBody, 0, delta);
+
+            var received = 0;
+            while (received < serializable.BodyLength - delta)
+            {
+                var current = await client.ReceiveAsync(bufBody, delta + received, serializable.BodyLength - received);
+                if (current == 0)                                               // Disconnected
+                    return default(T);
+
+                received += current;
+            }
             serializable.DeserializeBody(bufBody);
 
             return serializable;
         }
 
+        private static async Task<bool> ReceiveHeader<T>(T serializable, IAsyncTcpClient client) where T : ISerializable, new()
+        {
+            var bufHeader = new byte[serializable.HeaderLength];
+            if (!await client.ReceiveAllAsync(bufHeader, bufHeader.Length))
+                return false;
+
+            serializable.DeserializeHeader(bufHeader);
+            return true;
+        }
+        
         public static Task<bool> SendSerializable(this TcpClient client, ISerializable serializable)
         {
             var buffer = serializable.Serialize();
