@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleProjects", "ExampleP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksServer", "ExampleProjects\SocksServer\SocksServer.csproj", "{3E1357BB-F8AD-4C32-A27D-322DFA972742}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksClient", "SocksClient\SocksClient.csproj", "{1A014DB2-9EDB-4FAF-858C-5ABF919893B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksClient", "ExampleProjects\SocksClient\SocksClient.csproj", "{1A014DB2-9EDB-4FAF-858C-5ABF919893B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

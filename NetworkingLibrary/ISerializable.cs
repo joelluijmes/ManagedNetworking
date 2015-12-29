@@ -63,22 +63,13 @@ namespace NetworkingLibrary
             var delta = oldHeaderLength - serializable.HeaderLength;
             if (delta < 0)                                                      // Header shrinked -> contained body data
                 throw new InvalidOperationException("The header cannot grow because that would mean it wasn't fully deserialized yet.");
-
-            if (delta == 0)
-            {
-                var buffer = new byte[serializable.BodyLength];
-                if (!await client.ReceiveAllAsync(buffer, buffer.Length))
-                    return default(T);
-                serializable.DeserializeBody(buffer);
-
-                return serializable;
-            }
-
-            var bufBody = new byte[serializable.BodyLength + delta];
-            Buffer.BlockCopy(bufHeader, serializable.HeaderLength, bufBody, 0, delta);
+            
+            var bufBody = new byte[serializable.BodyLength + delta];            
+            if (delta > 0)                                                      // First part of the body was already in the header
+                Buffer.BlockCopy(bufHeader, serializable.HeaderLength, bufBody, 0, delta);
 
             var received = 0;
-            while (received < serializable.BodyLength - delta)
+            while (received < serializable.BodyLength - delta)                  // Remaining part of the body
             {
                 var current = await client.ReceiveAsync(bufBody, delta + received, serializable.BodyLength - received);
                 if (current == 0)                                               // Disconnected
