@@ -24,9 +24,6 @@ namespace NetworkingLibrary.Client
             }
         }
         
-        public EndPoint RemoteEndPoint => Socket?.RemoteEndPoint;
-        public EndPoint LocalEndPoint => Socket?.LocalEndPoint;
-
         public NetworkStream NetworkStream { get; private set; }
           
         protected BaseClient(ProtocolType type)

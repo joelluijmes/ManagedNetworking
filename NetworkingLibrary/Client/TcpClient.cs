@@ -15,6 +15,9 @@ namespace NetworkingLibrary.Client
 
         public bool EventOnDisconnect { get; set; } = true;
 
+        public EndPoint LocalEndPoint => Socket?.LocalEndPoint;
+        public EndPoint RemoteEndPoint => Socket?.RemoteEndPoint;
+
         private delegate int SocketTransferFunc(byte[] buffer, int offset, int count, SocketFlags socketFlags, out SocketError socketError);
         private delegate int TransferFunc(byte[] buffer, int offset, int count);
         
