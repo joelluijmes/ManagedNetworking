@@ -40,6 +40,7 @@ namespace NetworkingLibrary.Client
 
         public void Dispose()
         {
+            return;
             if (Socket != null)
             {
                 if (Socket.Connected)

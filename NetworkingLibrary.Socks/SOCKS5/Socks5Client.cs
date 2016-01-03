@@ -10,7 +10,7 @@ namespace NetworkingLibrary.Socks.SOCKS5
 {
     public sealed partial class Socks5Client 
     {
-        private const int RECV_BUFSIZE = 1024;
+        private const int RECV_BUFSIZE = UInt16.MaxValue;
         private readonly TaskCompletionSource<bool> _connectedCompletion;
 
         internal TcpClient InternalClient { get; }
@@ -105,7 +105,20 @@ namespace NetworkingLibrary.Socks.SOCKS5
         internal void StartTunneling()
         {
             _endPointClient.ReceiveCompleted += OnRemoteReceived;
+            _endPointClient.ClientDisconnected += async (sender, args) =>
+            {
+                Console.WriteLine("Disconnected..");
+                await Task.Delay(1000).ConfigureAwait(false);
+                InternalClient.Disconnect(false);
+            };
+
             InternalClient.ReceiveCompleted += OnProxiedReceived;
+            InternalClient.ClientDisconnected += async (sender, args) =>
+            {
+                Console.WriteLine("Disconnected..");
+                await Task.Delay(1000).ConfigureAwait(false);
+                _endPointClient.Disconnect(false);
+            };
 
             _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
             InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
@@ -118,7 +131,6 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 return;
 
             _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
-            Console.WriteLine($"[REMOTE] {e.Count}: {Encoding.UTF8.GetString(e.Bytes, 0, 20)}");
             InternalClient.BeginSendAll(e.Bytes, e.Count);
         }
 
@@ -129,7 +141,6 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 return;
 
             InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
-            Console.WriteLine($"[PROXY ] {e.Count}: {Encoding.UTF8.GetString(e.Bytes, 0, 20)}");
             _endPointClient.BeginSendAll(e.Bytes, e.Count);
         }
     }

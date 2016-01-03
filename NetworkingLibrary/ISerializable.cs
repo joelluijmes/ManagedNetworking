@@ -81,16 +81,6 @@ namespace NetworkingLibrary
 
             return serializable;
         }
-
-        private static async Task<bool> ReceiveHeader<T>(T serializable, IAsyncTcpClient client) where T : ISerializable, new()
-        {
-            var bufHeader = new byte[serializable.HeaderLength];
-            if (!await client.ReceiveAllAsync(bufHeader, bufHeader.Length))
-                return false;
-
-            serializable.DeserializeHeader(bufHeader);
-            return true;
-        }
         
         public static Task<bool> SendSerializable(this TcpClient client, ISerializable serializable)
         {

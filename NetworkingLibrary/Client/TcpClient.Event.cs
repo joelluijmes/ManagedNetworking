@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -38,39 +39,57 @@ namespace NetworkingLibrary.Client
         public void BeginSend(byte[] buffer, int offset = 0, int count = -1)
         {
             ValidateTransferArguments(buffer, offset, ref count);
-            BeginTransfer(Socket.BeginSend, Socket.EndSend, buffer, offset, count, SendCompleted);
+            if (Socket.Connected)
+                BeginTransfer(Socket.BeginSend, Socket.EndSend, buffer, offset, count, SendCompleted);
         }
 
         public void BeginSendAll(byte[] buffer, int count = -1)
         {
             ValidateTransferAllArguments(buffer, ref count);
-            BeginTransferAll(Socket.BeginSend, Socket.EndSend, buffer, count, SendCompleted);
+            if (Socket.Connected)
+                BeginTransferAll(Socket.BeginSend, Socket.EndSend, buffer, count, SendCompleted);
         }
 
         public void BeginReceive(byte[] buffer, int offset = 0, int count = -1)
         {
             ValidateTransferArguments(buffer, offset, ref count);
-            BeginTransfer(Socket.BeginReceive, Socket.EndReceive, buffer, offset, count, ReceiveCompleted);
+            if (Socket.Connected)
+                BeginTransfer(Socket.BeginReceive, Socket.EndReceive, buffer, offset, count, ReceiveCompleted);
         }
 
         public void BeginReceiveAll(byte[] buffer, int count = -1)
         {
             ValidateTransferAllArguments(buffer, ref count);
-            BeginTransferAll(Socket.BeginReceive, Socket.EndReceive, buffer, count, ReceiveCompleted);
+            if (Socket.Connected)
+                BeginTransferAll(Socket.BeginReceive, Socket.EndReceive, buffer, count, ReceiveCompleted);
         }
 
         private void BeginTransfer(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int offset, int count, EventHandler<TransferEventArgs> completedHandler)
         {
             ValidateTransferArguments(buffer, offset, ref count);
 
-            beginFunc(buffer, offset, count, SocketFlags.None, result =>
+            try
             {
-                SocketError error;
-                var transfered = endFunc(result, out error);
-                
-                ErrorHandling(error);
-                completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
-            }, null);
+                beginFunc(buffer, offset, count, SocketFlags.None, result =>
+                {
+                    try
+                    {
+                        SocketError error;
+                        var transfered = endFunc(result, out error);
+
+                        ErrorHandling(error);
+                        completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
+                    }
+                    catch
+                    {
+                        Disconnect();
+                    }
+                }, null);
+            }
+            catch
+            {
+                Disconnect();
+            }
         }
 
         private void BeginTransferAll(BeginSocketTransferFunc beginFunc, EndSocketTransferFunc endFunc, byte[] buffer, int count, EventHandler<TransferEventArgs> completedHandler)
@@ -87,6 +106,7 @@ namespace NetworkingLibrary.Client
                 if (current == 0)
                 {
                     completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
+                    Disconnect(false);
                     return;
                 }
 
@@ -99,7 +119,18 @@ namespace NetworkingLibrary.Client
                 completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
             };
 
-            beginFunc(buffer, transfered, count - transfered, SocketFlags.None, callback, null);
+            try
+            {
+                beginFunc(buffer, transfered, count, SocketFlags.None, callback, null);
+            }
+            catch (SocketException e)
+            {
+                if (e.SocketErrorCode != SocketError.ConnectionAborted)
+                    throw e;
+
+                Debug.WriteLine("ConnectionAborted.. :(");
+                Disconnect();
+            }
         }
     }
 }

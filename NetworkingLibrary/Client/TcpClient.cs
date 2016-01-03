@@ -42,18 +42,29 @@ namespace NetworkingLibrary.Client
             return connectedEndPoint != default(EndPoint);
         }
 
-        public void Disconnect(bool createNewSocket = true)
+        public void Disconnect(bool createNewSocket = false)
         {
             if (Socket == null)
                 return;
 
-            Socket.Shutdown(SocketShutdown.Both);
-            Socket.Close();
+            try
+            {
+                Socket.Shutdown(SocketShutdown.Both);
+                Socket.Close();
+                Socket.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            
+
+            if (EventOnDisconnect) 
+                ClientDisconnected?.Invoke(this, new ClientEventArgs(this));
 
             if (!createNewSocket)
                 return;
 
-            Socket.Dispose();
+            Socket = null;
             CreateSocket();
         }
 

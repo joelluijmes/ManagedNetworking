@@ -29,7 +29,7 @@ namespace SocksServer
 
         private static void Server_ClientDisconnected(object sender, NetworkingLibrary.Socks.Events.ClientEventArgs e)
         {
-            WriteLine($"Client disconnected from {e.Client.RemoteEndPoint}");
+            WriteLine($"Client disconnected");
         }
 
         private static void Server_ClientConnected(object sender, NetworkingLibrary.Socks.Events.ClientEventArgs e)
