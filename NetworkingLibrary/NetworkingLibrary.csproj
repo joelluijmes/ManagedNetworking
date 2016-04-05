@@ -48,6 +48,9 @@
     <Compile Include="Client\ITcpClient.cs" />
     <Compile Include="Client\TcpClient.cs" />
     <Compile Include="Client\TcpClient.Event.cs" />
+    <Compile Include="Client\UdpClient.Async.cs" />
+    <Compile Include="Client\UdpClient.cs" />
+    <Compile Include="Client\UdpClient.Event.cs" />
     <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="Events\TransferEventArgs.cs" />
     <Compile Include="ISerializable.cs" />
@@ -65,7 +68,6 @@
   <ItemGroup>
     <Compile Include="Server\TcpServer.Event.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

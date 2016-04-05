@@ -6,7 +6,7 @@ namespace NetworkingLibrary.Events
 {
     public class TransferEventArgs : EventArgs
     {
-        public TcpClient Client { get; }
+        public BaseClient Client { get; }
         public byte[] Bytes { get; }
         public int Count { get; }
         public EndPoint EndPoint { get; }
@@ -18,8 +18,11 @@ namespace NetworkingLibrary.Events
             Count = count;
         }
 
-        public TransferEventArgs(TcpClient client, byte[] bytes, int count, EndPoint endPoint) : this(client, bytes, count)
+        public TransferEventArgs(UdpClient client, byte[] bytes, int count, EndPoint endPoint)
         {
+            Client = client;
+            Bytes = bytes;
+            Count = count;
             EndPoint = endPoint;
         }
     }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkingLibrary", "NetworkingLibrary\NetworkingLibrary.csproj", "{CAE4CCBC-20A1-427F-A843-849ECAA05CB0}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksServer", "ExampleProjects\SocksServer\SocksServer.csproj", "{3E1357BB-F8AD-4C32-A27D-322DFA972742}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksClient", "ExampleProjects\SocksClient\SocksClient.csproj", "{1A014DB2-9EDB-4FAF-858C-5ABF919893B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleClient", "ExampleProjects\ExampleClient\ExampleClient.csproj", "{C6A59E2A-1365-4E69-84CB-6C4F21146366}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleEventServer", "ExampleProjects\ExampleEventServer\ExampleEventServer.csproj", "{2C500102-2AB1-4BE9-9CEA-1C600627EC00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,14 @@ Global
 		{1A014DB2-9EDB-4FAF-858C-5ABF919893B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A014DB2-9EDB-4FAF-858C-5ABF919893B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A014DB2-9EDB-4FAF-858C-5ABF919893B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A59E2A-1365-4E69-84CB-6C4F21146366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A59E2A-1365-4E69-84CB-6C4F21146366}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A59E2A-1365-4E69-84CB-6C4F21146366}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A59E2A-1365-4E69-84CB-6C4F21146366}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C500102-2AB1-4BE9-9CEA-1C600627EC00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C500102-2AB1-4BE9-9CEA-1C600627EC00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C500102-2AB1-4BE9-9CEA-1C600627EC00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C500102-2AB1-4BE9-9CEA-1C600627EC00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3E1357BB-F8AD-4C32-A27D-322DFA972742} = {FCDCDB48-9E6B-4A5C-BA3E-12B0E3F393E7}
 		{1A014DB2-9EDB-4FAF-858C-5ABF919893B6} = {FCDCDB48-9E6B-4A5C-BA3E-12B0E3F393E7}
+		{C6A59E2A-1365-4E69-84CB-6C4F21146366} = {FCDCDB48-9E6B-4A5C-BA3E-12B0E3F393E7}
+		{2C500102-2AB1-4BE9-9CEA-1C600627EC00} = {FCDCDB48-9E6B-4A5C-BA3E-12B0E3F393E7}
 	EndGlobalSection
 EndGlobal

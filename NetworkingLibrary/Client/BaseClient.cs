@@ -11,6 +11,9 @@ namespace NetworkingLibrary.Client
         private readonly ProtocolType _type;
         private Socket _socket;
 
+        public EndPoint LocalEndPoint => Socket?.LocalEndPoint;
+        public EndPoint RemoteEndPoint => Socket?.RemoteEndPoint;
+
         protected Socket Socket
         {
             get { return _socket; }
@@ -40,7 +43,6 @@ namespace NetworkingLibrary.Client
 
         public void Dispose()
         {
-            return;
             if (Socket != null)
             {
                 if (Socket.Connected)

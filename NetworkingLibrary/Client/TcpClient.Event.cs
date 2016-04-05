@@ -115,8 +115,6 @@ namespace NetworkingLibrary.Client
                     beginFunc(buffer, transfered, count - transfered, SocketFlags.None, callback, null);
                 else
                     completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, count));
-
-                completedHandler?.Invoke(this, new TransferEventArgs(this, buffer, transfered));
             };
 
             try
