@@ -51,12 +51,10 @@ namespace NetworkingLibrary.Client
             ValidateTransferArguments(buffer, offset, ref count);
             Socket.BeginReceiveFrom(buffer, offset, count, SocketFlags.None, ref remoteEndPoint, ar =>
             {
-                var sent = Socket.EndReceive(ar);
-                var endPoint = ar.AsyncState as EndPoint;
-                if (endPoint == null)
-                    return;
+                var remoteEnd = (EndPoint)ar.AsyncState;
+                var received = Socket.EndReceiveFrom(ar, ref remoteEnd);
 
-                ReceiveCompleted?.Invoke(this, new TransferEventArgs(this, buffer, sent, endPoint));
+                ReceiveCompleted?.Invoke(this, new TransferEventArgs(this, buffer, received, remoteEnd));
             }, remoteEndPoint);
         }
 
