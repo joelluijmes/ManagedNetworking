@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using NetworkingLibrary.Client;
+using NetworkingLibrary.Events;
 using NetworkingLibrary.Server;
 using NetworkingLibrary.Socks.SOCKS5.Packets;
 
@@ -21,8 +22,9 @@ namespace NetworkingLibrary.Socks.SOCKS5
         public event EventHandler<SocksClientEventArgs> ClientConnected;
         public event EventHandler<SocksClientEventArgs> ClientDisconnected;
         public event EventHandler<TcpClientEventArgs> InvalidClientConnected;
+        public event EventHandler<TransferEventArgs> ProxySending;
+        public event EventHandler<TransferEventArgs> ProxyReceiving;
         
-
         public Socks5Server(int port)
         {
             _server = new TcpServer();
@@ -38,7 +40,12 @@ namespace NetworkingLibrary.Socks.SOCKS5
         {
             _server.BeginAccept();
 
-            var client = new Socks5Client(e.Client);
+            var client = new Socks5Client(e.Client)
+            {
+                ProxySending = args => ProxySending?.Invoke(this, args),
+                ProxyReceiving = args => ProxyReceiving?.Invoke(this, args)
+            };
+
             client.InternalClient.ClientDisconnected += (o, args) 
                 => ClientDisconnected?.Invoke(this, new SocksClientEventArgs(client));
 
@@ -48,6 +55,8 @@ namespace NetworkingLibrary.Socks.SOCKS5
                 InvalidClientConnected?.Invoke(this, new TcpClientEventArgs(e.Client));
 
             await HandleConnectionInitiate(client);
+
+            var buf = client.Receive(new byte[100]);
             client.StartTunneling();
 
             _clients.Add(client);

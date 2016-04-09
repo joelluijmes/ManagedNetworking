@@ -13,6 +13,11 @@ namespace NetworkingLibrary.Socks.SOCKS5
         private const int RECV_BUFSIZE = UInt16.MaxValue;
         private readonly TaskCompletionSource<bool> _connectedCompletion;
 
+        internal delegate void DataTransferingFunc(TransferEventArgs e);
+
+        internal DataTransferingFunc ProxySending;
+        internal DataTransferingFunc ProxyReceiving;
+
         internal TcpClient InternalClient { get; }
         private TcpClient _endPointClient;
 
@@ -130,6 +135,8 @@ namespace NetworkingLibrary.Socks.SOCKS5
             if (e.Count == 0) // disconnected
                 return;
 
+            ProxyReceiving?.Invoke(e);
+
             _endPointClient.BeginReceive(new byte[RECV_BUFSIZE]);
             InternalClient.BeginSendAll(e.Bytes, e.Count);
         }
@@ -139,6 +146,8 @@ namespace NetworkingLibrary.Socks.SOCKS5
             // TODO: Disconnect??
             if (e.Count == 0) // disconnected
                 return;
+
+            ProxySending?.Invoke(e);
 
             InternalClient.BeginReceive(new byte[RECV_BUFSIZE]);
             _endPointClient.BeginSendAll(e.Bytes, e.Count);

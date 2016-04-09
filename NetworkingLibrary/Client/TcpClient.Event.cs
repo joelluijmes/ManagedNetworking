@@ -53,7 +53,7 @@ namespace NetworkingLibrary.Client
         public void BeginReceive(byte[] buffer, int offset = 0, int count = -1)
         {
             ValidateTransferArguments(buffer, offset, ref count);
-            if (Socket.Connected)
+            // if (Socket.Connected)
                 BeginTransfer(Socket.BeginReceive, Socket.EndReceive, buffer, offset, count, ReceiveCompleted);
         }
 
