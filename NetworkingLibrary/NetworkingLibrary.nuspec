@@ -4,7 +4,11 @@
     <id>NetworkingLibrary</id>
     <version>1.0.0.0</version>
     <authors>Joël Luijmes</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wrapper library around Socket.</description>
     <projectUrl>https://github.com/joelluijmes/ManagedNetworking</projectUrl>
   </metadata>
+  <files>
+    <file src="bin\Release\NetworkingLibrary.dll" target="lib\NetworkingLibrary.dll" />
+  </files>
 </package>

@@ -4,7 +4,11 @@
     <id>NetworkingLibrary.Socks</id>
     <version>1.0.0.0</version>
     <authors>Joël Luijmes</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Extension on NetworkingLibrary by adding SOCKS proxy.</description>
     <projectUrl>https://github.com/joelluijmes/ManagedNetworking</projectUrl>
   </metadata>
+  <files>
+    <file src="bin\Release\NetworkingLibrary.Socks.dll" target="lib\NetworkingLibrary.Socks.dll" />
+  </files>
 </package>
