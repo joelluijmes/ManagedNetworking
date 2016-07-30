@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>NetworkingLibrary</id>
+    <version>1.0.0.0</version>
+    <authors>Joël Luijmes</authors>
+    <description>Wrapper library around Socket.</description>
+    <projectUrl>https://github.com/joelluijmes/ManagedNetworking</projectUrl>
+  </metadata>
+</package>
