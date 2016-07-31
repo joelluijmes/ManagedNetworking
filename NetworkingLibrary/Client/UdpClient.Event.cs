@@ -1,11 +1,11 @@
-﻿using System;
+﻿using NetworkingLibrary.Events;
+using System;
 using System.Net;
 using System.Net.Sockets;
-using NetworkingLibrary.Events;
 
 namespace NetworkingLibrary.Client
 {
-    public sealed partial class UdpClient
+    public sealed partial class UdpClient : IEventUdpClient
     {
         public event EventHandler<TransferEventArgs> SendCompleted;
         public event EventHandler<TransferEventArgs> ReceiveCompleted;

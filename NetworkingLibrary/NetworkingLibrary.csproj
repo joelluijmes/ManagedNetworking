@@ -45,7 +45,10 @@
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="Client\IAsyncTcpClient.cs" />
     <Compile Include="Client\IEventTcpClient.cs" />
+    <Compile Include="Client\IEventUdpClient.cs" />
     <Compile Include="Client\ITcpClient.cs" />
+    <Compile Include="Client\IUdpClient.cs" />
+    <Compile Include="Client\IAsyncUdpClient.cs" />
     <Compile Include="Client\TcpClient.cs" />
     <Compile Include="Client\TcpClient.Event.cs" />
     <Compile Include="Client\UdpClient.Async.cs" />

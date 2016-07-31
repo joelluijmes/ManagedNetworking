@@ -1,12 +1,12 @@
-﻿using System;
+﻿using NetworkingLibrary.Util;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using NetworkingLibrary.Util;
 
 namespace NetworkingLibrary.Client
 {
-    public sealed partial class UdpClient
+    public sealed partial class UdpClient : IAsyncUdpClient
     {
         private static readonly Pool<SocketAsyncEventArgs> _pool = new Pool<SocketAsyncEventArgs>();
 

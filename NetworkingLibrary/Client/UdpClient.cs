@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace NetworkingLibrary.Client
 {
-    public sealed partial class UdpClient : BaseClient
+    public sealed partial class UdpClient : BaseClient, IUdpClient
     {
         public UdpClient() : base(ProtocolType.Udp)
         { }
