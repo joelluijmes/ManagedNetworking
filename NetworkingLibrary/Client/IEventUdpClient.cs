@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NetworkingLibrary.Events;
+using System;
 using System.Net;
-using NetworkingLibrary.Events;
 
 namespace NetworkingLibrary.Client
 {
@@ -13,5 +13,6 @@ namespace NetworkingLibrary.Client
         void BeginReceiveAll(byte[] buffer, int count, EndPoint remoteEndPoint);
         void BeginSend(byte[] buffer, int offset, int count, EndPoint endPoint);
         void BeginSendAll(byte[] buffer, int count, EndPoint remoteEndPoint);
+        void Bind(EndPoint endPoint);
     }
 }
