@@ -56,8 +56,10 @@
     <Compile Include="Client\UdpClient.Event.cs" />
     <Compile Include="Events\ClientEventArgs.cs" />
     <Compile Include="Events\TransferEventArgs.cs" />
-    <Compile Include="ISerializable.cs" />
+    <Compile Include="Serializable\IHeadSerializable.cs" />
+    <Compile Include="Serializable\ISerializable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serializable\SerializeableExtensions.cs" />
     <Compile Include="Server\IAsyncServer.cs" />
     <Compile Include="Server\IEventServer.cs" />
     <Compile Include="Server\IServer.cs" />

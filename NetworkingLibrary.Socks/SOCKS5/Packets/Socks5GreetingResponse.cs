@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NetworkingLibrary.Serializable;
 
 namespace NetworkingLibrary.Socks.SOCKS5.Packets
 {

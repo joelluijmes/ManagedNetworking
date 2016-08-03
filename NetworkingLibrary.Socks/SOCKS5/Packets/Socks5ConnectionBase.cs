@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using NetworkingLibrary.Serializable;
 
 namespace NetworkingLibrary.Socks.SOCKS5.Packets
 {

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NetworkingLibrary.Client;
 using NetworkingLibrary.Events;
+using NetworkingLibrary.Serializable;
 using NetworkingLibrary.Server;
 using NetworkingLibrary.Socks.SOCKS5.Packets;
 

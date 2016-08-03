@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using NetworkingLibrary.Serializable;
 
 namespace NetworkingLibrary.Socks.SOCKS5.Packets
 {

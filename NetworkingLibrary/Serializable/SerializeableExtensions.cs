@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+using NetworkingLibrary.Client;
+using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using NetworkingLibrary.Client;
 
-namespace NetworkingLibrary
+namespace NetworkingLibrary.Serializable
 {
-    public interface ISerializable
-    {
-        int HeaderLength { get; }
-        int BodyLength { get; }
-
-        byte[] SerializeHeader();
-        byte[] SerializeBody();
-        void DeserializeHeader(IList<byte> serialized);
-        void DeserializeBody(IList<byte> serialized);
-    }
-
     public static class SerializeableExtensions
     {
         public static byte[] Serialize(this ISerializable serializable)
@@ -47,13 +36,32 @@ namespace NetworkingLibrary
             serializable.DeserializeBody(segment);
         }
 
-        public static async Task<T> ReceiveSerializable<T>(this TcpClient client) where T : ISerializable, new()
+        public static Task<T> ReceiveSerializable<T>(this IAsyncTcpClient client) where T : ISerializable, new() =>
+            ReceiveSerializableImpl<T>(client.ReceiveAsync);
+
+        public static Task<T> ReceiveFromSerializable<T>(this IAsyncUdpClient client, EndPoint endPoint) where T : ISerializable, new() =>
+            ReceiveSerializableImpl<T>(async (buf, offset, count) => (await client.ReceiveAsync(buf, offset, count, endPoint)).Item1);
+
+        public static Task<bool> SendSerializable(this IAsyncTcpClient client, ISerializable serializable)
+        {
+            var buffer = serializable.Serialize();
+            return client.SendAllAsync(buffer, buffer.Length);
+        }
+
+        public static Task<bool> SendToSerializable(this IAsyncUdpClient client, ISerializable serializable, EndPoint endPoint)
+        {
+            var buffer = serializable.Serialize();
+            return client.SendAllAsync(buffer, buffer.Length, endPoint);
+        }
+
+        private static async Task<T> ReceiveSerializableImpl<T>(Func<byte[], int, int, Task<int>> transfer) where T : ISerializable, new()
         {
             var serializable = new T();
 
             var oldHeaderLength = serializable.HeaderLength;
             var bufHeader = new byte[oldHeaderLength];
-            if (!await client.ReceiveAllAsync(bufHeader))
+            
+            if (await transfer(bufHeader, 0, bufHeader.Length) == 0)            // TODO: probably receive all
                 return default(T);
             serializable.DeserializeHeader(bufHeader);
 
@@ -63,15 +71,15 @@ namespace NetworkingLibrary
             var delta = oldHeaderLength - serializable.HeaderLength;
             if (delta < 0)                                                      // Header shrinked -> contained body data
                 throw new InvalidOperationException("The header cannot grow because that would mean it wasn't fully deserialized yet.");
-            
-            var bufBody = new byte[serializable.BodyLength + delta];            
+
+            var bufBody = new byte[serializable.BodyLength + delta];
             if (delta > 0)                                                      // First part of the body was already in the header
                 Buffer.BlockCopy(bufHeader, serializable.HeaderLength, bufBody, 0, delta);
 
             var received = 0;
             while (received < serializable.BodyLength - delta)                  // Remaining part of the body
             {
-                var current = await client.ReceiveAsync(bufBody, delta + received, serializable.BodyLength - received);
+                var current = await transfer(bufBody, delta + received, serializable.BodyLength - received);
                 if (current == 0)                                               // Disconnected
                     return default(T);
 
@@ -80,12 +88,6 @@ namespace NetworkingLibrary
             serializable.DeserializeBody(bufBody);
 
             return serializable;
-        }
-        
-        public static Task<bool> SendSerializable(this TcpClient client, ISerializable serializable)
-        {
-            var buffer = serializable.Serialize();
-            return client.SendAllAsync(buffer);
         }
     }
 }

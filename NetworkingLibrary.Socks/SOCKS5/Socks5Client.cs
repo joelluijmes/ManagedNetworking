@@ -1,10 +1,10 @@
-﻿using System;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using NetworkingLibrary.Client;
+﻿using NetworkingLibrary.Client;
 using NetworkingLibrary.Events;
+using NetworkingLibrary.Serializable;
 using NetworkingLibrary.Socks.SOCKS5.Packets;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NetworkingLibrary.Socks.SOCKS5
 {
